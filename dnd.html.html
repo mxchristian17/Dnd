@@ -1,0 +1,2210 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tomo del DM — La Party</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & BASE ─────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+–ink:      #1a1410;
+–parch:    #f5ede0;
+–parch2:   #ede2cf;
+–parch3:   #e2d4bb;
+–rust:     #8b3a2a;
+–rust-lt:  #c45a3a;
+–gold:     #b8860b;
+–gold-lt:  #d4a017;
+–sepia:    #5c3d1e;
+–sepia-lt: #8b6344;
+–midnight: #0e1117;
+–slate:    #1c2333;
+–slate2:   #252d3d;
+–slate3:   #2e3850;
+–mist:     #8fa3b8;
+–azure:    #6b9fc8;
+–silver:   #c8d6e5;
+–hp-hi:    #4caf82;
+–hp-mid:   #d4a017;
+–hp-lo:    #c0392b;
+–shadow-sm: 0 2px 8px rgba(0,0,0,.35);
+–shadow-md: 0 6px 24px rgba(0,0,0,.5);
+–shadow-lg: 0 12px 48px rgba(0,0,0,.65);
+–radius:   8px;
+–radius-lg: 14px;
+}
+
+html { font-size: 16px; }
+
+body {
+font-family: ‘IM Fell English’, Georgia, serif;
+background: var(–midnight);
+color: var(–silver);
+min-height: 100vh;
+overflow-x: hidden;
+}
+
+/* ── BACKGROUND TEXTURE ──────────────────────────────── */
+body::before {
+content: ‘’;
+position: fixed;
+inset: 0;
+background:
+radial-gradient(ellipse 80% 60% at 15% 20%, rgba(107,159,200,.06) 0%, transparent 60%),
+radial-gradient(ellipse 60% 80% at 85% 80%, rgba(184,134,11,.05) 0%, transparent 60%),
+repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,.01) 40px, rgba(255,255,255,.01) 41px),
+repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,.008) 40px, rgba(255,255,255,.008) 41px);
+pointer-events: none;
+z-index: 0;
+}
+
+/* ── HEADER ──────────────────────────────────────────── */
+.app-header {
+position: relative;
+z-index: 10;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 10px;
+padding: 10px 20px;
+border-bottom: 1px solid rgba(184,134,11,.25);
+background: linear-gradient(180deg, rgba(14,17,23,1) 0%, rgba(28,35,51,.95) 100%);
+}
+
+.app-header::after {
+content: ‘’;
+position: absolute;
+bottom: -1px; left: 50%; transform: translateX(-50%);
+width: 200px; height: 1px;
+background: linear-gradient(90deg, transparent, var(–gold-lt), transparent);
+}
+
+.logo-rune {
+font-size: 1.3rem;
+line-height: 1;
+filter: drop-shadow(0 0 8px rgba(212,160,23,.5));
+}
+
+.app-title {
+font-family: ‘Cinzel Decorative’, serif;
+font-size: clamp(.85rem, 3vw, 1.2rem);
+font-weight: 700;
+color: var(–gold-lt);
+letter-spacing: 3px;
+text-shadow: 0 0 20px rgba(212,160,23,.4), 0 2px 4px rgba(0,0,0,.6);
+line-height: 1;
+}
+
+.app-sub {
+font-family: ‘IM Fell English’, serif;
+font-style: italic;
+font-size: .78rem;
+color: var(–mist);
+letter-spacing: 1px;
+}
+
+/* ── MOBILE NAV ──────────────────────────────────────── */
+.mobile-nav {
+display: flex;
+position: sticky;
+top: 0;
+z-index: 100;
+background: var(–slate);
+border-bottom: 1px solid rgba(184,134,11,.2);
+overflow-x: auto;
+scrollbar-width: none;
+box-shadow: 0 2px 12px rgba(0,0,0,.5);
+}
+.mobile-nav::-webkit-scrollbar { display: none; }
+
+.mnav-btn {
+flex: 0 0 auto;
+font-family: ‘Cinzel’, serif;
+font-size: .65rem;
+letter-spacing: 1px;
+padding: 10px 14px;
+border: none;
+background: transparent;
+color: var(–mist);
+cursor: pointer;
+white-space: nowrap;
+border-bottom: 2px solid transparent;
+transition: color .2s, border-color .2s, background .2s;
+text-transform: uppercase;
+}
+.mnav-btn:hover { color: var(–silver); background: rgba(255,255,255,.04); }
+.mnav-btn.active { color: var(–gold-lt); border-bottom-color: var(–gold-lt); }
+
+/* ── MAIN LAYOUT ─────────────────────────────────────── */
+.app-body { position: relative; z-index: 1; }
+
+/* Mobile: sections shown/hidden via JS */
+.section { display: none; padding: 10px; animation: fadeIn .2s ease; }
+.section.visible { display: block; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Desktop: grid layout */
+@media (min-width: 1024px) {
+.mobile-nav { display: none; }
+.app-body {
+display: grid;
+grid-template-columns: 1fr 320px;
+grid-template-rows: auto;
+gap: 0;
+height: calc(100vh - 52px);
+overflow: hidden;
+}
+.section {
+display: block !important;
+padding: 0;
+animation: none;
+overflow-y: auto;
+height: 100%;
+}
+.section::-webkit-scrollbar { width: 4px; }
+.section::-webkit-scrollbar-track { background: transparent; }
+.section::-webkit-scrollbar-thumb { background: rgba(184,134,11,.3); border-radius: 2px; }
+
+.section-main {
+padding: 12px 14px 12px 16px;
+border-right: 1px solid rgba(184,134,11,.15);
+}
+.section-side {
+display: flex !important;
+flex-direction: column;
+padding: 0;
+background: rgba(28,35,51,.6);
+}
+/* Side tabs */
+.side-tabs { display: flex; border-bottom: 1px solid rgba(184,134,11,.15); }
+.side-tab-btn {
+flex: 1;
+font-family: ‘Cinzel’, serif;
+font-size: .6rem;
+letter-spacing: 1px;
+padding: 9px 4px;
+border: none;
+background: transparent;
+color: var(–mist);
+cursor: pointer;
+text-transform: uppercase;
+border-bottom: 2px solid transparent;
+transition: all .2s;
+}
+.side-tab-btn:hover { color: var(–silver); }
+.side-tab-btn.active { color: var(–gold-lt); border-bottom-color: var(–gold-lt); background: rgba(212,160,23,.05); }
+.side-panel { display: none; flex: 1; overflow-y: auto; padding: 12px; }
+.side-panel::-webkit-scrollbar { width: 4px; }
+.side-panel::-webkit-scrollbar-thumb { background: rgba(184,134,11,.3); border-radius: 2px; }
+.side-panel.active { display: block; }
+}
+
+/* ── PANEL CARD ──────────────────────────────────────── */
+.card {
+background: var(–slate);
+border: 1px solid rgba(184,134,11,.18);
+border-radius: var(–radius-lg);
+padding: 12px 14px;
+margin-bottom: 10px;
+box-shadow: var(–shadow-sm);
+position: relative;
+overflow: hidden;
+}
+.card::before {
+content: ‘’;
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 1px;
+background: linear-gradient(90deg, transparent 10%, rgba(212,160,23,.4) 50%, transparent 90%);
+}
+
+.card-title {
+font-family: ‘Cinzel’, serif;
+font-size: .72rem;
+letter-spacing: 2px;
+text-transform: uppercase;
+color: var(–gold);
+margin-bottom: 10px;
+padding-bottom: 8px;
+border-bottom: 1px solid rgba(184,134,11,.15);
+display: flex;
+align-items: center;
+justify-content: space-between;
+flex-wrap: wrap;
+gap: 6px;
+}
+
+/* ── BUTTONS ─────────────────────────────────────────── */
+.btn {
+font-family: ‘Cinzel’, serif;
+font-size: .68rem;
+letter-spacing: 1.2px;
+text-transform: uppercase;
+padding: 8px 14px;
+border-radius: 6px;
+border: 1px solid transparent;
+cursor: pointer;
+transition: all .18s ease;
+display: inline-flex;
+align-items: center;
+gap: 5px;
+font-weight: 600;
+line-height: 1;
+white-space: nowrap;
+}
+.btn:hover { filter: brightness(1.15); transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,.3); }
+.btn:active { transform: translateY(0) scale(.97); }
+
+.btn-gold    { background: var(–gold); color: var(–ink); border-color: var(–gold-lt); }
+.btn-rust    { background: var(–rust-lt); color: #fff; border-color: var(–rust); }
+.btn-teal    { background: #2a7c68; color: #fff; border-color: #3a9c84; }
+.btn-azure   { background: #2a5a8c; color: #fff; border-color: var(–azure); }
+.btn-ghost   { background: rgba(255,255,255,.05); color: var(–mist); border-color: rgba(255,255,255,.1); }
+.btn-ghost:hover { color: var(–silver); background: rgba(255,255,255,.09); }
+.btn-danger  { background: rgba(192,57,43,.85); color: #fff; border-color: var(–hp-lo); }
+.btn-sm { padding: 5px 10px; font-size: .62rem; }
+.btn-xs { padding: 3px 8px; font-size: .6rem; letter-spacing: .8px; }
+.btn-full { width: 100%; justify-content: center; padding: 11px; }
+
+.btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* ── INPUTS ──────────────────────────────────────────── */
+label.lbl {
+display: block;
+font-family: ‘Cinzel’, serif;
+font-size: .65rem;
+letter-spacing: 1.5px;
+text-transform: uppercase;
+color: var(–azure);
+margin-bottom: 5px;
+margin-top: 12px;
+}
+
+input, select, textarea {
+font-family: ‘IM Fell English’, Georgia, serif;
+padding: 9px 12px;
+border-radius: 6px;
+border: 1px solid rgba(255,255,255,.1);
+background: rgba(14,17,23,.7);
+color: var(–silver);
+font-size: .95rem;
+width: 100%;
+transition: border-color .2s, box-shadow .2s;
+-webkit-appearance: none;
+}
+input:focus, select:focus, textarea:focus {
+border-color: var(–gold);
+outline: none;
+box-shadow: 0 0 0 2px rgba(184,134,11,.2);
+}
+input[type=“number”] { text-align: center; }
+input[type=“file”] {
+font-size: .82rem;
+padding: 7px 10px;
+color: var(–mist);
+cursor: pointer;
+}
+select option { background: var(–slate2); }
+textarea { resize: vertical; min-height: 70px; font-style: italic; }
+
+.field-row { display: grid; gap: 10px; }
+.field-row.cols2 { grid-template-columns: 1fr 1fr; }
+.field-row.cols3 { grid-template-columns: 1fr 1fr 1fr; }
+
+/* ── STATS GRID ──────────────────────────────────────── */
+.stats-grid {
+display: grid;
+grid-template-columns: repeat(6, 1fr);
+gap: 6px;
+background: rgba(14,17,23,.5);
+border: 1px solid rgba(255,255,255,.07);
+border-radius: 8px;
+padding: 10px;
+margin-top: 4px;
+}
+@media (max-width: 480px) { .stats-grid { grid-template-columns: repeat(3, 1fr); } }
+
+.stat-cell {
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 4px;
+}
+.stat-cell .slbl {
+font-family: ‘Cinzel’, serif;
+font-size: .6rem;
+letter-spacing: 1px;
+color: var(–gold);
+text-transform: uppercase;
+}
+.stat-cell input { padding: 6px 3px; font-size: .9rem; }
+
+/* ── ENCOUNTER TABLE ─────────────────────────────────── */
+.enc-table-wrap {
+overflow-x: auto;
+border-radius: 8px;
+border: 1px solid rgba(184,134,11,.15);
+}
+.enc-table-wrap::-webkit-scrollbar { height: 4px; }
+.enc-table-wrap::-webkit-scrollbar-thumb { background: rgba(184,134,11,.3); border-radius: 2px; }
+
+table { width: 100%; border-collapse: collapse; min-width: 580px; }
+
+thead th {
+font-family: ‘Cinzel’, serif;
+font-size: .6rem;
+letter-spacing: 1.5px;
+text-transform: uppercase;
+color: var(–gold);
+padding: 7px 8px;
+background: rgba(14,17,23,.6);
+border-bottom: 1px solid rgba(184,134,11,.2);
+white-space: nowrap;
+text-align: left;
+}
+thead th:last-child { text-align: right; }
+
+tbody td {
+padding: 6px 8px;
+border-bottom: 1px solid rgba(255,255,255,.04);
+vertical-align: middle;
+}
+
+/* Inline-edit cell */
+.inline-val {
+cursor: pointer;
+font-family: ‘Cinzel’, serif;
+font-size: .85rem;
+padding: 2px 6px;
+border-radius: 4px;
+border: 1px solid transparent;
+display: inline-block;
+min-width: 28px;
+text-align: center;
+transition: background .15s, border-color .15s;
+}
+.inline-val:hover { background: rgba(184,134,11,.12); border-color: rgba(184,134,11,.3); }
+.inline-input {
+font-family: ‘Cinzel’, serif;
+font-size: .85rem;
+width: 54px;
+padding: 2px 4px;
+text-align: center;
+background: rgba(14,17,23,.9);
+border: 1px solid var(–gold);
+border-radius: 4px;
+color: var(–silver);
+outline: none;
+box-shadow: 0 0 0 2px rgba(184,134,11,.2);
+}
+tbody tr { transition: background .15s; }
+tbody tr:hover { background: rgba(184,134,11,.04); }
+tbody tr.dead { opacity: .38; }
+tbody tr:last-child td { border-bottom: none; }
+
+/* Init badge */
+.init-badge {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+width: 32px; height: 32px;
+border-radius: 50%;
+background: rgba(107,159,200,.15);
+border: 1px solid rgba(107,159,200,.3);
+font-family: ‘Cinzel’, serif;
+font-size: .85rem;
+font-weight: 600;
+color: var(–azure);
+}
+.init-badge.high { background: rgba(212,160,23,.15); border-color: rgba(212,160,23,.4); color: var(–gold-lt); }
+
+/* Name styles */
+.cname { font-family: ‘IM Fell English’, serif; font-size: 1rem; line-height: 1.2; }
+.cname.pc { color: var(–azure); }
+.cname.pc.has-sheet { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; text-decoration-color: rgba(107,159,200,.5); }
+.cname.pc.has-sheet:hover { color: var(–silver); }
+.cname.npc { color: #e07070; cursor: pointer; text-decoration: underline; text-decoration-style: dashed; text-decoration-color: rgba(224,112,112,.4); }
+.cname.npc:hover { color: var(–gold-lt); }
+.ctype { font-size: .72rem; color: var(–mist); font-style: italic; margin-top: 1px; }
+
+/* HP display */
+.hp-display { display: flex; flex-direction: column; gap: 4px; min-width: 80px; }
+.hp-nums { font-family: ‘Cinzel’, serif; font-size: .85rem; }
+.hp-track { height: 4px; border-radius: 2px; background: rgba(255,255,255,.08); overflow: hidden; }
+.hp-fill { height: 100%; border-radius: 2px; transition: width .4s ease, background .4s ease; }
+
+/* HP controls */
+.hp-ctrl { display: flex; gap: 5px; align-items: center; }
+.hp-ctrl input { width: 54px; padding: 6px 4px; font-size: .85rem; }
+
+/* Action buttons in table */
+.act-btns { display: flex; gap: 4px; justify-content: flex-end; }
+
+/* ── LOG ─────────────────────────────────────────────── */
+.log-wrap {
+background: rgba(14,17,23,.7);
+border: 1px solid rgba(255,255,255,.07);
+border-radius: 8px;
+overflow: hidden;
+}
+.log-scroller {
+height: 280px;
+overflow-y: auto;
+padding: 12px;
+}
+@media (min-width: 1024px) { .log-scroller { height: 100%; min-height: 0; } }
+.log-scroller::-webkit-scrollbar { width: 3px; }
+.log-scroller::-webkit-scrollbar-thumb { background: rgba(184,134,11,.25); border-radius: 2px; }
+
+.log-entry {
+display: flex;
+gap: 8px;
+padding: 5px 0;
+border-bottom: 1px solid rgba(255,255,255,.04);
+font-size: .85rem;
+line-height: 1.45;
+animation: logSlide .2s ease;
+}
+@keyframes logSlide { from { opacity:0; transform: translateX(-6px); } to { opacity:1; transform: translateX(0); } }
+.log-entry:last-child { border-bottom: none; }
+.log-time { flex-shrink: 0; color: rgba(143,163,184,.5); font-size: .75rem; padding-top: 2px; font-style: italic; }
+.log-msg { color: var(–mist); flex: 1; }
+.log-msg strong { color: var(–silver); }
+
+/* ── EVENT BADGE ─────────────────────────────────────── */
+.evt-pill {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+font-family: ‘Cinzel’, serif;
+font-size: .63rem;
+letter-spacing: 1px;
+padding: 4px 12px;
+border-radius: 20px;
+border: 1px solid rgba(255,255,255,.1);
+color: var(–mist);
+transition: all .3s;
+}
+.evt-pill.active {
+border-color: var(–hp-hi);
+color: var(–hp-hi);
+background: rgba(76,175,130,.08);
+box-shadow: 0 0 8px rgba(76,175,130,.2);
+}
+.evt-pulse {
+width: 6px; height: 6px;
+border-radius: 50%;
+background: var(–hp-hi);
+animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:.5; transform:scale(.7); } }
+
+/* ── EVENT MODAL ─────────────────────────────────────── */
+.hist-card {
+background: rgba(14,17,23,.5);
+border: 1px solid rgba(184,134,11,.15);
+border-radius: 8px;
+margin-bottom: 10px;
+overflow: hidden;
+}
+.hist-head {
+padding: 12px 14px;
+cursor: pointer;
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+gap: 8px;
+transition: background .15s;
+}
+.hist-head:hover { background: rgba(184,134,11,.06); }
+.hist-title { font-family: ‘Cinzel’, serif; font-size: .78rem; color: var(–gold); margin-bottom: 3px; }
+.hist-meta { font-size: .72rem; color: var(–mist); font-style: italic; }
+.hist-party-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; }
+.hist-party-chip {
+font-size: .65rem;
+padding: 2px 8px;
+border-radius: 20px;
+background: rgba(107,159,200,.1);
+border: 1px solid rgba(107,159,200,.2);
+color: var(–azure);
+}
+.hist-body {
+display: none;
+padding: 12px;
+background: rgba(0,0,0,.2);
+border-top: 1px solid rgba(255,255,255,.05);
+max-height: 280px;
+overflow-y: auto;
+font-size: .82rem;
+}
+.hist-log-entry { padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,.04); color: var(–mist); }
+.hist-log-entry strong { color: var(–silver); }
+
+/* ── MODALS ──────────────────────────────────────────── */
+dialog {
+background: var(–slate);
+color: var(–silver);
+border: 1px solid rgba(184,134,11,.35);
+border-radius: var(–radius-lg);
+padding: 0;
+max-width: 600px;
+width: calc(100% - 32px);
+box-shadow: var(–shadow-lg), 0 0 60px rgba(184,134,11,.1);
+overflow: hidden;
+}
+dialog::backdrop {
+background: rgba(0,0,0,.82);
+backdrop-filter: blur(6px);
+}
+
+.modal-head {
+background: linear-gradient(180deg, var(–slate2) 0%, var(–slate) 100%);
+padding: 16px 20px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+border-bottom: 1px solid rgba(184,134,11,.2);
+position: relative;
+}
+.modal-head::after {
+content: ‘’;
+position: absolute;
+bottom: 0; left: 20%; right: 20%;
+height: 1px;
+background: linear-gradient(90deg, transparent, rgba(212,160,23,.4), transparent);
+}
+.modal-title {
+font-family: ‘Cinzel’, serif;
+font-size: .85rem;
+letter-spacing: 2px;
+text-transform: uppercase;
+color: var(–gold-lt);
+}
+.modal-close {
+font-family: none;
+background: transparent;
+border: none;
+color: rgba(192,57,43,.8);
+font-size: 1.1rem;
+cursor: pointer;
+padding: 2px 6px;
+border-radius: 4px;
+transition: color .2s, background .2s;
+line-height: 1;
+letter-spacing: 0;
+}
+.modal-close:hover { color: var(–hp-lo); background: rgba(192,57,43,.1); transform: none; filter: none; box-shadow: none; }
+
+.modal-body {
+padding: 20px;
+max-height: 72vh;
+overflow-y: auto;
+}
+.modal-body::-webkit-scrollbar { width: 4px; }
+.modal-body::-webkit-scrollbar-thumb { background: rgba(184,134,11,.3); border-radius: 2px; }
+
+.modal-footer { display: flex; gap: 10px; margin-top: 20px; }
+.modal-footer .btn { flex: 1; justify-content: center; padding: 11px; }
+
+/* ── CHAR SHEET MODAL ────────────────────────────────── */
+.sheet-stats {
+display: grid;
+grid-template-columns: repeat(6, 1fr);
+gap: 5px;
+background: rgba(14,17,23,.5);
+border: 1px solid rgba(255,255,255,.07);
+border-radius: 8px;
+padding: 10px;
+text-align: center;
+margin-bottom: 12px;
+}
+@media (max-width: 420px) { .sheet-stats { grid-template-columns: repeat(3, 1fr); } }
+.sheet-stat { display: flex; flex-direction: column; gap: 2px; }
+.sheet-stat-name { font-family: ‘Cinzel’, serif; font-size: .55rem; color: var(–gold); letter-spacing: 1px; }
+.sheet-stat-val { font-family: ‘Cinzel’, serif; font-size: 1rem; color: var(–silver); }
+.sheet-stat-mod { font-size: .7rem; color: var(–mist); }
+
+.sheet-meta-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+gap: 8px;
+background: rgba(14,17,23,.5);
+border: 1px solid rgba(255,255,255,.07);
+border-radius: 8px;
+padding: 10px;
+margin-bottom: 12px;
+}
+.sheet-meta-item { display: flex; flex-direction: column; gap: 2px; }
+.sheet-meta-label { font-family: ‘Cinzel’, serif; font-size: .55rem; color: var(–mist); letter-spacing: 1px; text-transform: uppercase; }
+.sheet-meta-val { font-size: .85rem; color: var(–silver); }
+
+.sheet-section { margin-bottom: 12px; }
+.sheet-section-title {
+font-family: ‘Cinzel’, serif;
+font-size: .65rem;
+letter-spacing: 2px;
+text-transform: uppercase;
+color: var(–gold);
+padding-bottom: 5px;
+margin-bottom: 8px;
+border-bottom: 1px solid rgba(184,134,11,.2);
+}
+.pill-list { display: flex; flex-wrap: wrap; gap: 4px; }
+.pill {
+font-size: .75rem;
+padding: 2px 9px;
+background: rgba(107,159,200,.08);
+border: 1px solid rgba(107,159,200,.2);
+border-radius: 20px;
+color: var(–azure);
+font-style: italic;
+}
+.spell-level { margin-bottom: 6px; }
+.spell-level-name { font-family: ‘Cinzel’, serif; font-size: .6rem; color: var(–azure); letter-spacing: 1px; margin-bottom: 4px; }
+.sheet-lore {
+font-style: italic;
+color: var(–mist);
+font-size: .88rem;
+line-height: 1.6;
+background: rgba(14,17,23,.4);
+padding: 10px 12px;
+border-radius: 6px;
+border-left: 2px solid rgba(184,134,11,.3);
+}
+
+/* Beast detail modal */
+.beast-detail h3 {
+font-family: ‘Cinzel’, serif;
+font-size: .85rem;
+color: var(–gold-lt);
+margin: 16px 0 5px;
+padding-bottom: 4px;
+border-bottom: 1px solid rgba(184,134,11,.15);
+}
+.beast-detail h4 {
+font-family: ‘Cinzel’, serif;
+font-size: .75rem;
+color: var(–azure);
+margin: 10px 0 3px;
+}
+.beast-detail strong { color: var(–hp-hi); }
+.beast-detail em { color: var(–mist); }
+.beast-detail img { max-width: 100%; border-radius: 8px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,.08); }
+.beast-detail p { font-size: .9rem; color: var(–silver); margin-bottom: 6px; line-height: 1.55; }
+
+/* ── PARTY CARDS ─────────────────────────────────────── */
+.pc-card {
+background: rgba(14,17,23,.5);
+border: 1px solid rgba(107,159,200,.15);
+border-radius: 8px;
+padding: 10px 12px;
+margin-bottom: 8px;
+display: flex;
+align-items: center;
+gap: 10px;
+transition: border-color .2s, background .2s;
+}
+.pc-card:hover { border-color: rgba(107,159,200,.3); background: rgba(107,159,200,.04); }
+.pc-avatar {
+width: 34px; height: 34px;
+border-radius: 50%;
+background: linear-gradient(135deg, var(–slate3) 0%, var(–slate2) 100%);
+border: 1px solid rgba(184,134,11,.3);
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 1rem;
+flex-shrink: 0;
+}
+.pc-info { flex: 1; min-width: 0; }
+.pc-name-line {
+font-family: ‘IM Fell English’, serif;
+font-size: .9rem;
+color: var(–silver);
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+.pc-class-line { font-size: .7rem; color: var(–mist); font-style: italic; }
+.pc-stats-line { display: flex; gap: 8px; margin-top: 4px; font-family: ‘Cinzel’, serif; font-size: .62rem; color: var(–mist); }
+.pc-stat-val { color: var(–silver); }
+.event-warning-box {
+background: rgba(212,160,23,.07);
+border: 1px solid rgba(212,160,23,.25);
+border-radius: 8px;
+padding: 12px 14px;
+font-size: .85rem;
+color: var(–gold-lt);
+margin-bottom: 14px;
+line-height: 1.5;
+}
+
+/* ── FORMAT DOC ──────────────────────────────────────── */
+.format-pre {
+background: rgba(14,17,23,.8);
+border: 1px solid rgba(255,255,255,.07);
+border-radius: 8px;
+padding: 14px;
+font-family: ‘Consolas’, ‘Courier New’, monospace;
+font-size: .75rem;
+color: #98c379;
+overflow-x: auto;
+white-space: pre;
+line-height: 1.6;
+}
+
+/* ── DIVIDERS / ORNAMENTS ────────────────────────────── */
+.ornament {
+text-align: center;
+color: rgba(184,134,11,.3);
+font-size: .85rem;
+margin: 4px 0;
+letter-spacing: 8px;
+}
+
+/* ── IMPORT STATUS ────────────────────────────────────── */
+.status-msg {
+font-size: .82rem;
+font-style: italic;
+min-height: 22px;
+padding: 4px 0;
+transition: opacity .3s;
+}
+
+/* ── BESTIARY INFO ────────────────────────────────────── */
+.beast-quick {
+background: rgba(14,17,23,.5);
+border: 1px solid rgba(255,255,255,.07);
+border-radius: 8px;
+padding: 12px;
+display: flex;
+flex-wrap: wrap;
+gap: 12px;
+align-items: center;
+margin-bottom: 10px;
+}
+.beast-stat-chip {
+font-family: ‘Cinzel’, serif;
+font-size: .68rem;
+letter-spacing: 1px;
+}
+.beast-stat-chip span { color: var(–silver); }
+
+/* ── IMPORT AREA ─────────────────────────────────────── */
+.import-row {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 10px;
+margin-bottom: 10px;
+}
+@media (max-width: 540px) { .import-row { grid-template-columns: 1fr; } }
+
+.import-slot {
+background: rgba(14,17,23,.5);
+border: 1px dashed rgba(255,255,255,.12);
+border-radius: 8px;
+padding: 12px;
+display: flex;
+flex-direction: column;
+gap: 8px;
+transition: border-color .2s;
+}
+.import-slot:hover { border-color: rgba(184,134,11,.3); }
+.import-slot-label {
+font-family: ‘Cinzel’, serif;
+font-size: .62rem;
+letter-spacing: 1.5px;
+text-transform: uppercase;
+color: var(–mist);
+}
+
+/* ── UTILITIES ───────────────────────────────────────── */
+.mt4 { margin-top: 4px; }
+.mt8 { margin-top: 8px; }
+.mt12 { margin-top: 12px; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+.text-muted { color: var(–mist); font-size: .85rem; font-style: italic; text-align: center; padding: 20px; }
+
+/* ── PARTY EDITOR ────────────────────────────────────── */
+.pced-card {
+background: rgba(14,17,23,.6);
+border: 1px solid rgba(107,159,200,.18);
+border-radius: 10px;
+margin-bottom: 8px;
+overflow: hidden;
+transition: border-color .2s;
+}
+.pced-card.expanded { border-color: rgba(107,159,200,.4); }
+
+.pced-header {
+display: flex;
+align-items: center;
+gap: 10px;
+padding: 9px 12px;
+cursor: pointer;
+transition: background .15s;
+user-select: none;
+}
+.pced-header:hover { background: rgba(107,159,200,.05); }
+
+.pced-avatar {
+width: 32px; height: 32px;
+border-radius: 50%;
+background: linear-gradient(135deg, var(–slate3), var(–slate2));
+border: 1px solid rgba(184,134,11,.3);
+display: flex; align-items: center; justify-content: center;
+font-size: .95rem; flex-shrink: 0;
+}
+.pced-name { flex: 1; font-family: ‘IM Fell English’, serif; font-size: .95rem; color: var(–silver); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pced-class { font-size: .7rem; color: var(–mist); font-style: italic; }
+.pced-quick { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+.pced-quick-stat { font-family: ‘Cinzel’, serif; font-size: .6rem; color: var(–mist); text-align: center; line-height: 1.2; }
+.pced-quick-val { font-size: .82rem; color: var(–silver); display: block; }
+.pced-chevron { color: var(–mist); font-size: .7rem; transition: transform .2s; flex-shrink: 0; }
+.pced-card.expanded .pced-chevron { transform: rotate(180deg); }
+
+.pced-body { display: none; padding: 0 12px 12px; border-top: 1px solid rgba(255,255,255,.05); }
+.pced-card.expanded .pced-body { display: block; }
+
+.pced-section { margin-top: 12px; }
+.pced-section-title {
+font-family: ‘Cinzel’, serif; font-size: .6rem; letter-spacing: 2px; text-transform: uppercase;
+color: var(–gold); margin-bottom: 7px; padding-bottom: 4px; border-bottom: 1px solid rgba(184,134,11,.15);
+display: flex; justify-content: space-between; align-items: center;
+}
+
+.pced-hp-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pced-hp-track { flex: 1; min-width: 60px; height: 6px; background: rgba(255,255,255,.07); border-radius: 3px; overflow: hidden; }
+.pced-hp-fill { height: 100%; border-radius: 3px; transition: width .35s ease, background .35s; }
+.pced-hp-btns { display: flex; gap: 5px; }
+
+.pced-stats-row { display: grid; grid-template-columns: repeat(6,1fr); gap: 5px; }
+@media (max-width:420px) { .pced-stats-row { grid-template-columns: repeat(3,1fr); } }
+.pced-stat {
+display: flex; flex-direction: column; align-items: center; gap: 3px;
+background: rgba(14,17,23,.5); border: 1px solid rgba(255,255,255,.06); border-radius: 6px; padding: 6px 3px;
+cursor: pointer; transition: border-color .15s, background .15s;
+}
+.pced-stat:hover { border-color: rgba(184,134,11,.35); background: rgba(184,134,11,.05); }
+.pced-stat-lbl { font-family:‘Cinzel’,serif; font-size:.55rem; color:var(–gold); letter-spacing:1px; }
+.pced-stat-val { font-family:‘Cinzel’,serif; font-size:.95rem; color:var(–silver); }
+.pced-stat-mod { font-size:.68rem; color:var(–mist); }
+
+.pced-field { display: flex; flex-direction: column; gap: 4px; }
+.pced-field label { font-family:‘Cinzel’,serif; font-size:.58rem; letter-spacing:1.5px; text-transform:uppercase; color:var(–mist); }
+.pced-field input, .pced-field textarea {
+padding: 6px 8px; font-size: .85rem; background: rgba(14,17,23,.6);
+border: 1px solid rgba(255,255,255,.08); border-radius: 5px; color: var(–silver); width: 100%;
+}
+.pced-field input:focus, .pced-field textarea:focus { border-color: var(–gold); outline: none; box-shadow: 0 0 0 2px rgba(184,134,11,.15); }
+.pced-field textarea { resize: vertical; min-height: 55px; font-style: italic; font-family: ‘IM Fell English’, serif; }
+
+.pced-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.pced-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+
+.pced-list { display: flex; flex-direction: column; gap: 4px; }
+.pced-list-item { display: flex; align-items: center; gap: 6px; background: rgba(14,17,23,.4); border: 1px solid rgba(255,255,255,.06); border-radius: 5px; padding: 4px 8px; }
+.pced-list-item input { flex: 1; background: transparent; border: none; padding: 2px 0; font-size: .82rem; color: var(–azure); font-style: italic; outline: none; }
+.pced-list-item input:focus { border-bottom: 1px solid var(–gold); }
+.pced-list-del { background: transparent; border: none; color: rgba(192,57,43,.55); cursor: pointer; font-size: .85rem; padding: 0 2px; line-height: 1; flex-shrink: 0; transition: color .15s; }
+.pced-list-del:hover { color: var(–hp-lo); transform: none; filter: none; box-shadow: none; }
+
+.pced-add-row { display: flex; gap: 6px; margin-top: 5px; }
+.pced-add-input { flex: 1; padding: 5px 8px; font-size: .8rem; background: rgba(14,17,23,.4); border: 1px dashed rgba(255,255,255,.1); border-radius: 5px; color: var(–silver); font-family: inherit; }
+.pced-add-input:focus { outline: none; border-color: var(–gold); }
+.pced-add-btn { font-family: ‘Cinzel’, serif; font-size: .6rem; padding: 5px 9px; background: rgba(184,134,11,.15); border: 1px solid rgba(184,134,11,.3); border-radius: 5px; color: var(–gold); cursor: pointer; white-space: nowrap; transition: background .15s; }
+.pced-add-btn:hover { background: rgba(184,134,11,.28); transform: none; filter: none; box-shadow: none; }
+
+.pced-spell-group { margin-bottom: 8px; }
+.pced-spell-group-head { font-family: ‘Cinzel’, serif; font-size: .6rem; color: var(–azure); letter-spacing: 1px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
+
+.pced-delete-row { margin-top: 14px; padding-top: 10px; border-top: 1px solid rgba(192,57,43,.15); display: flex; gap: 8px; justify-content: flex-end; }
+</style>
+
+</head>
+<body>
+
+<!-- HEADER -->
+
+<header class="app-header">
+  <div class="logo-rune">⚔</div>
+  <h1 class="app-title">Tomo del DM</h1>
+  <p class="app-sub">Rastreador de campaña — La Party</p>
+</header>
+
+<!-- MOBILE NAV -->
+
+<nav class="mobile-nav">
+  <button class="mnav-btn active" onclick="showSection('enc', this)">⚔ Encuentro</button>
+  <button class="mnav-btn" onclick="showSection('bestiary', this)">🐉 Bestiario</button>
+  <button class="mnav-btn" onclick="showSection('party', this)">👥 Party</button>
+  <button class="mnav-btn" onclick="showSection('log', this)">📜 Log</button>
+  <button class="mnav-btn" onclick="showSection('history', this)">📚 Historial</button>
+  <button class="mnav-btn" onclick="showSection('import', this)">📂 Importar</button>
+</nav>
+
+<!-- BODY -->
+
+<div class="app-body">
+
+  <!-- MAIN COLUMN -->
+
+  <div class="section section-main visible" id="section-enc">
+
+```
+<!-- IMPORT (desktop only shows here as collapsed, full in import tab on mobile) -->
+<div class="card" id="import-card-main" style="display:none"><!-- filled by desktop --></div>
+
+<!-- BESTIARY -->
+<div class="card" id="section-bestiary" style="display:none">
+  <div class="card-title">
+    🐉 Bestiario
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+    <input id="search-name" placeholder="🔍 Buscar criatura..." style="flex:1;min-width:120px">
+    <select id="filter-cr" style="width:130px;flex:0 0 auto">
+      <option value="">CR: Todos</option>
+    </select>
+  </div>
+  <select id="bestiary-select" style="width:100%;margin-bottom:10px;padding:10px"></select>
+  <div id="bestiary-info">
+    <p class="text-muted">Selecciona una criatura para ver sus estadísticas...</p>
+  </div>
+  <button class="btn btn-gold btn-full mt8" onclick="addFromBestiary()">⚔ Agregar al Encuentro</button>
+</div>
+
+<!-- ENCUENTRO -->
+<div class="card">
+  <div class="card-title">
+    <span style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span>⚔ Encuentro</span>
+      <span id="event-badge" class="evt-pill">SIN EVENTO</span>
+    </span>
+    <div class="btn-group">
+      <button class="btn btn-gold btn-sm" onclick="openEventModal()">🎭 Evento</button>
+      <button class="btn btn-azure btn-sm" onclick="openAddPcModal()">👤 PC</button>
+      <button class="btn btn-teal btn-sm" onclick="rollPartyInitiative()">🎲 Inic.</button>
+      <button class="btn btn-ghost btn-sm" onclick="endEncounterKeepParty()">🧹 Limpiar</button>
+    </div>
+  </div>
+  <div class="enc-table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:48px">Inic.</th>
+          <th>Nombre</th>
+          <th style="width:55px">AC</th>
+          <th style="width:110px">HP</th>
+          <th>Modificar HP</th>
+          <th>Acc.</th>
+        </tr>
+      </thead>
+      <tbody id="combatants-list"></tbody>
+    </table>
+  </div>
+</div>
+```
+
+  </div><!-- /section-enc -->
+
+  <!-- MOBILE SECTIONS (hidden on desktop) -->
+
+  <div class="section" id="section-bestiary-mobile">
+    <!-- JS renders bestiary content here on mobile -->
+  </div>
+
+  <div class="section" id="section-import">
+    <div class="card">
+      <div class="card-title">📂 Importar Archivos</div>
+      <div class="import-row">
+        <div class="import-slot">
+          <div class="import-slot-label">📖 Bestiario (.md)</div>
+          <input type="file" id="file-input" accept=".md">
+          <button class="btn btn-teal btn-sm" onclick="importBestiary()">📥 Importar</button>
+        </div>
+        <div class="import-slot">
+          <div class="import-slot-label">👥 Fichas de Party (.json)</div>
+          <input type="file" id="party-file-input" accept=".json">
+          <button class="btn btn-azure btn-sm" onclick="importPartyFile()">📥 Cargar</button>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="showFormatDoc()" style="width:100%;justify-content:center;margin-top:4px">📄 Ver formato .json</button>
+      <div class="status-msg" id="import-status"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">⚠️ Reset</div>
+      <button class="btn btn-danger btn-full" onclick="hardReset()">Reset Total de la App</button>
+      <p style="font-size:.75rem;color:var(--mist);font-style:italic;margin-top:8px;text-align:center">El bestiario no se borrará. Solo los datos de party e historial.</p>
+    </div>
+  </div>
+
+  <!-- SIDE COLUMN (desktop) / Separate sections (mobile) -->
+
+  <div class="section section-side" id="section-side">
+
+```
+<!-- Desktop side tabs -->
+<div class="side-tabs">
+  <button class="side-tab-btn active" onclick="switchSide('log', this)">📜 Log</button>
+  <button class="side-tab-btn" onclick="switchSide('party', this)">👥 Party</button>
+  <button class="side-tab-btn" onclick="switchSide('history', this)">📚 Historial</button>
+  <button class="side-tab-btn" onclick="switchSide('dimport', this)">📂 Importar</button>
+</div>
+
+<!-- LOG -->
+<div class="side-panel active" id="side-log">
+  <div class="log-wrap" style="height:100%;display:flex;flex-direction:column">
+    <div class="log-scroller" id="log-box" style="flex:1"></div>
+  </div>
+</div>
+
+<!-- PARTY SIDE -->
+<div class="side-panel" id="side-party">
+  <div id="party-cards-side"></div>
+</div>
+
+<!-- HISTORY SIDE -->
+<div class="side-panel" id="side-history">
+  <div id="history-list-side"></div>
+</div>
+
+<!-- IMPORT SIDE -->
+<div class="side-panel" id="side-dimport">
+  <div class="import-row" style="display:flex;flex-direction:column;gap:10px">
+    <div class="import-slot">
+      <div class="import-slot-label">📖 Bestiario (.md)</div>
+      <input type="file" id="file-input-d" accept=".md">
+      <button class="btn btn-teal btn-sm" onclick="importBestiaryDesk()">📥 Importar</button>
+    </div>
+    <div class="import-slot">
+      <div class="import-slot-label">👥 Fichas Party (.json)</div>
+      <input type="file" id="party-file-input-d" accept=".json">
+      <button class="btn btn-azure btn-sm" onclick="importPartyFileDesk()">📥 Cargar</button>
+    </div>
+  </div>
+  <button class="btn btn-ghost btn-sm" onclick="showFormatDoc()" style="width:100%;justify-content:center;margin-top:8px">📄 Ver formato .json</button>
+  <div class="status-msg" id="import-status-d" style="margin-top:6px"></div>
+  <hr style="border:none;border-top:1px solid rgba(255,255,255,.07);margin:16px 0">
+  <button class="btn btn-danger btn-full btn-sm" onclick="hardReset()">⚠️ Reset Total</button>
+</div>
+```
+
+  </div><!-- /section-side -->
+
+  <!-- MOBILE: party / log / history -->
+
+  <div class="section" id="section-party">
+    <div class="card"><div class="card-title">👥 Party</div><div id="party-cards-mobile"></div></div>
+  </div>
+  <div class="section" id="section-log">
+    <div class="card"><div class="card-title">📜 Log de Combate</div>
+      <div class="log-wrap"><div class="log-scroller" id="log-box-mobile" style="height:60vh"></div></div>
+    </div>
+  </div>
+  <div class="section" id="section-history">
+    <div class="card"><div class="card-title">📚 Eventos Archivados</div><div id="history-list-mobile"></div></div>
+  </div>
+
+</div><!-- /app-body -->
+
+<!-- ============ MODALS ============ -->
+
+<!-- ADD PC -->
+
+<dialog id="add-pc-modal">
+  <div class="modal-head">
+    <span class="modal-title">👤 Nuevo Personaje</span>
+    <button class="modal-close" onclick="this.closest('dialog').close()">✖</button>
+  </div>
+  <div class="modal-body">
+    <label class="lbl" style="margin-top:0">Nombre</label>
+    <input type="text" id="pc-name" placeholder="Ej: Ewan Larkson">
+    <div class="field-row cols2">
+      <div><label class="lbl">AC</label><input type="number" id="pc-ac" placeholder="15"></div>
+      <div><label class="lbl">HP Máximo</label><input type="number" id="pc-hp" placeholder="35"></div>
+    </div>
+    <label class="lbl">Atributos</label>
+    <div class="stats-grid">
+      <div class="stat-cell"><div class="slbl">STR</div><input type="number" id="pc-str" value="10"></div>
+      <div class="stat-cell"><div class="slbl">DEX</div><input type="number" id="pc-dex" value="10"></div>
+      <div class="stat-cell"><div class="slbl">CON</div><input type="number" id="pc-con" value="10"></div>
+      <div class="stat-cell"><div class="slbl">INT</div><input type="number" id="pc-int" value="10"></div>
+      <div class="stat-cell"><div class="slbl">WIS</div><input type="number" id="pc-wis" value="10"></div>
+      <div class="stat-cell"><div class="slbl">CHA</div><input type="number" id="pc-cha" value="10"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-teal" onclick="addPc()">Añadir a la Party</button>
+      <button class="btn btn-danger" onclick="this.closest('dialog').close()">Cancelar</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- EDIT -->
+
+<dialog id="edit-modal">
+  <div class="modal-head">
+    <span class="modal-title">✏️ Editar Combatiente</span>
+    <button class="modal-close" onclick="this.closest('dialog').close()">✖</button>
+  </div>
+  <div class="modal-body">
+    <input type="hidden" id="edit-id">
+    <label class="lbl" style="margin-top:0">Nombre</label>
+    <input type="text" id="edit-name">
+    <div class="field-row cols3">
+      <div><label class="lbl">Iniciativa</label><input type="number" id="edit-init"></div>
+      <div><label class="lbl">AC</label><input type="number" id="edit-ac"></div>
+      <div><label class="lbl">HP Máx</label><input type="number" id="edit-hpmax"></div>
+    </div>
+    <label class="lbl">Atributos</label>
+    <div class="stats-grid">
+      <div class="stat-cell"><div class="slbl">STR</div><input type="number" id="edit-str"></div>
+      <div class="stat-cell"><div class="slbl">DEX</div><input type="number" id="edit-dex"></div>
+      <div class="stat-cell"><div class="slbl">CON</div><input type="number" id="edit-con"></div>
+      <div class="stat-cell"><div class="slbl">INT</div><input type="number" id="edit-int"></div>
+      <div class="stat-cell"><div class="slbl">WIS</div><input type="number" id="edit-wis"></div>
+      <div class="stat-cell"><div class="slbl">CHA</div><input type="number" id="edit-cha"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-teal" onclick="saveEdit()">Guardar</button>
+      <button class="btn btn-danger" onclick="this.closest('dialog').close()">Cancelar</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- BEAST DETAIL -->
+
+<dialog id="detail-modal">
+  <div class="modal-head">
+    <span class="modal-title" id="detail-title"></span>
+    <button class="modal-close" onclick="this.closest('dialog').close()">✖</button>
+  </div>
+  <div class="modal-body" id="detail-content"></div>
+</dialog>
+
+<!-- CHAR SHEET -->
+
+<dialog id="char-modal">
+  <div class="modal-head">
+    <span class="modal-title" id="char-modal-title"></span>
+    <button class="modal-close" onclick="this.closest('dialog').close()">✖</button>
+  </div>
+  <div class="modal-body" id="char-modal-body"></div>
+</dialog>
+
+<!-- EVENT -->
+
+<dialog id="event-modal">
+  <div class="modal-head">
+    <span class="modal-title">🎭 Gestionar Evento</span>
+    <button class="modal-close" onclick="this.closest('dialog').close()">✖</button>
+  </div>
+  <div class="modal-body">
+    <div id="event-status-box"></div>
+    <div id="event-start-sec">
+      <label class="lbl" style="margin-top:0">Nombre del evento</label>
+      <input type="text" id="event-name-input" placeholder="Ej: La emboscada en el muelle">
+      <label class="lbl">Descripción del DM (opcional)</label>
+      <textarea id="event-desc-input" placeholder="Contexto, notas, peligros..."></textarea>
+      <button class="btn btn-gold btn-full mt12" onclick="startEvent()">🎭 Iniciar Evento</button>
+    </div>
+    <div id="event-end-sec" style="display:none">
+      <div class="event-warning-box mt8">
+        ⚡ Al finalizar: la <strong>party se preserva</strong> con su HP actual, los <strong>NPCs se limpian</strong>, y el log completo se archiva en el historial.
+      </div>
+      <button class="btn btn-teal btn-full" onclick="endEvent()">✅ Finalizar y Archivar Evento</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- FORMAT -->
+
+<dialog id="format-modal">
+  <div class="modal-head">
+    <span class="modal-title">📄 Formato Ficha .json</span>
+    <button class="modal-close" onclick="this.closest('dialog').close()">✖</button>
+  </div>
+  <div class="modal-body">
+    <p style="font-size:.85rem;color:var(--mist);font-style:italic;margin-bottom:12px">Crea un <strong style="color:var(--silver)">.json</strong> con este formato y cárgalo con "Cargar Fichas". Los PCs existentes (por nombre) se actualizarán; los nuevos se añadirán.</p>
+    <div class="format-pre" id="format-pre-box"></div>
+    <button class="btn btn-azure btn-full mt12" onclick="downloadSampleJson()">⬇ Descargar Ejemplo</button>
+  </div>
+</dialog>
+
+<!-- ============ SCRIPT ============ -->
+
+<script>
+/* ─── DEFAULT PARTY ─────────────────────────────────── */
+const DEFAULT_PARTY = [
+  { id:1001, name:"Madamme Francinè", init:0, ac:18, hp:41, maxHp:41, cr:null, type:"PC",
+    stats:{str:10,dex:12,con:12,int:10,wis:16,cha:14}, dexMod:1,
+    icon:"🕊",
+    sheet:{ race:"Humana", class:"Clérigo — Dominio de la Luz", background:"Wayfarer",
+      feats:["Tough","Magic Initiate (Wizard)","Healer","Warcaster (Nv4)","Divine Order (Thaumaturge)"],
+      classFeatures:["Warding Flare: reacción, desventaja al atacante (4/LR)","Radiance of Dawn: daño radiante en área","Divine Spark / Turn Undead"],
+      spells:{"Trucos":["Shillelagh","Fire Bolt","Guidance","Sacred Flame","Thaumaturgy","Word of Radiance"],"Nv1":["Shield","Burning Hands","Faerie Fire","Bless","Command","Cure Wounds","Healing Word"],"Nv2":["Scorching Ray","See Invisibility","Hold Person","Prayer of Healing","Zone of Truth"]},
+      lore:"Nacida en la pobreza extrema, aprendió que ninguna agresión debe quedar sin respuesta. Su filosofía es el cuidado mezclado con represalias justas contra la crueldad." }},
+  { id:1002, name:"Ewan Larkson", init:0, ac:14, hp:32, maxHp:32, cr:null, type:"PC",
+    stats:{str:8,dex:18,con:14,int:8,wis:12,cha:16}, dexMod:4,
+    icon:"🪶",
+    sheet:{ race:"Hada (Fairy) — Pequeño", class:"Rogue — Swashbuckler", background:"Wayfarer",
+      feats:["Lucky","Fairy Magic (Druidcraft / Faerie Fire / Enlarge–Reduce)","Sneak Attack 2d6","Rakish Audacity: CAR a Iniciativa, SA sin ventaja si enemigo aislado","Fancy Footwork: no provoca ataques de oportunidad","Cunning Action & Steady Aim"],
+      weaponMastery:["Rapier (Vex): ventaja en siguiente ataque al impactar"],
+      lore:"Conocido como 'Larksong'. Criado en los muelles de Panelia bajo la tripulación pirata del Diente del Viento. Explorador, negociador, fiel a sus amigos por encima de todo." }},
+  { id:1003, name:"Elron Sammer", init:0, ac:17, hp:45, maxHp:45, cr:null, type:"PC",
+    stats:{str:18,dex:10,con:16,int:10,wis:12,cha:10}, dexMod:0,
+    icon:"🐺",
+    sheet:{ race:"Shifter (Licántropo controlado)", class:"Paladin — Juramento de Venganza", background:"Soldado / Haunted One",
+      equipment:["Martillo de guerra","Escudo","Pistola (balas de plata, carga única)","Agua bendita, estacas, crucifijos"],
+      feats:["Polearm Master: ataque de bono + oportunidad al entrar en rango","Shifting: HP temporal + ventajas de combate","Vow of Enmity: ventaja en ataques vs criatura elegida"],
+      lore:"Ex-soldado que perdió a su familia ante hombres lobo y quedó maldito. Caza monstruos por dinero para reunir 100.000 po y pagar su cura. Un Witcher que lucha contra su propia naturaleza." }},
+  { id:1004, name:"Rías Gremory", init:0, ac:15, hp:36, maxHp:36, cr:null, type:"PC",
+    stats:{str:10,dex:18,con:14,int:12,wis:12,cha:14}, dexMod:4,
+    icon:"💰",
+    sheet:{ race:"No especificada", class:"Fighter/Ranger/Rogue (distancia)", background:"Merchant",
+      feats:["Sharpshooter (Nv4): ignora cobertura media, rango largo sin desventaja, –5 ataque /+10 daño","Lucky (trasfondo)"],
+      lore:"Hija de los Gremory, casa comercial en quiebra. Pelea en el torneo obligada por su padre para saldar deudas con gente peligrosa. Existe riesgo de secuestro por los acreedores." }},
+  { id:1005, name:"Jace Stillwater", init:0, ac:15, hp:30, maxHp:30, cr:null, type:"PC",
+    stats:{str:8,dex:14,con:12,int:14,wis:10,cha:18}, dexMod:2,
+    icon:"🌑",
+    sheet:{ race:"Humano", class:"Hechicero — Shadow Magic", background:"Espía / Criminal", alias:"Ashiok",
+      meta:{spellSave:14, spellAtk:"+6"},
+      feats:["Metamagia: Subtle Spell + Twinned Spell","Strength of the Grave: resistencia a muerte","Conexión con el Shadowfell"],
+      spells:{"Enfoque":["Ilusión","Control"],"Destacados":["Sleep","Darkness","Suggestion"]},
+      lore:"Hechicero innato que rechazó la academia para operar en el bajo mundo. Usa el alias 'Ashiok' para trabajos sucios. Quiere ganar el torneo y comprar su independencia total." }}
+];
+
+const SAMPLE_JSON = {
+  party:[{
+    name:"Nombre del Personaje", ac:15, hp:40,
+    stats:{str:10,dex:16,con:14,int:12,wis:12,cha:14},
+    sheet:{
+      race:"Humano", class:"Guerrero", background:"Soldado",
+      alias:"(Opcional) Apodo",
+      feats:["Feat 1","Feat 2"],
+      classFeatures:["Rasgo de clase"],
+      weaponMastery:["Arma (propiedad)"],
+      spells:{"Trucos":["Fire Bolt"],"Nv1":["Shield"]},
+      equipment:["Espada larga","Escudo"],
+      meta:{ spellSave:14, spellAtk:"+6" },
+      lore:"Historia del personaje en texto libre."
+    }
+  }]
+};
+
+/* ─── UTILS ─────────────────────────────────────────── */
+const calcMod = s => Math.floor((s-10)/2);
+const modStr  = m => (m>=0?"+":"")+m;
+const PC_ICONS = ["⚔","🏹","✨","🛡","🎭","🗡","🧙","🌿"];
+
+/* ─── STATE ─────────────────────────────────────────── */
+function loadState(){ try { return JSON.parse(localStorage.getItem("dnd_v9")); } catch(e){ return null; } }
+function persist(){ localStorage.setItem("dnd_v9", JSON.stringify(state)); }
+
+let state = loadState();
+if(!state){
+  state = { combatants: JSON.parse(JSON.stringify(DEFAULT_PARTY)), logs:[], savedEvents:[], currentEvent:null };
+  addLog("⚔ ¡Bienvenido! La party está lista. Usa <strong>🎭 Evento</strong> para iniciar un encuentro y <strong>🐉 Bestiario</strong> para añadir criaturas.");
+  persist();
+}
+if(!state.savedEvents)  state.savedEvents  = [];
+if(!state.currentEvent) state.currentEvent = null;
+
+/* ─── BESTIARY ──────────────────────────────────────── */
+function loadBestiary(){ try{ return JSON.parse(localStorage.getItem("dnd_bestiary_v4")||"{}"); }catch(e){ return {}; } }
+function saveBestiary(d){ try{ localStorage.setItem("dnd_bestiary_v4",JSON.stringify(d)); }catch(e){ alert("Bestiario muy pesado, se guarda solo por sesión."); } }
+let bestiary = loadBestiary();
+
+function extractStat(b,n){ const m=b.match(new RegExp(n+"\s+\|\s+(\d+)","i")); return m?parseInt(m[1]):10; }
+
+function parseBestiary(md){
+  const out={};
+  md.replace(/\r/g,'').split("\n# ").slice(1).forEach(block=>{
+    const lines=block.split("\n");
+    const name=lines[0].trim();
+    const ac=block.match(/\*\*Armor Class\*\*\s*(\d+)/i);
+    const hp=block.match(/\*\*Hit Points\*\*\s*(\d+)/i);
+    const cr=block.match(/\*\*Challenge\*\*\s*([^\s(]+)/i);
+    if(!ac||!hp)return;
+    const stats={str:extractStat(block,"Strength"),dex:extractStat(block,"Dexterity"),con:extractStat(block,"Constitution"),int:extractStat(block,"Intelligence"),wis:extractStat(block,"Wisdom"),cha:extractStat(block,"Charisma")};
+    out[name]={ac:parseInt(ac[1]),hp:parseInt(hp[1]),stats,dexMod:calcMod(stats.dex),cr:cr?cr[1]:"?",raw:block};
+  });
+  return out;
+}
+
+function doImportBestiary(fileInputId, statusId){
+  const file = document.getElementById(fileInputId).files[0];
+  if(!file) return setStatus(statusId,"⚠️ Selecciona un archivo .md", "warn");
+  const r=new FileReader();
+  r.onload=e=>{
+    const imp=parseBestiary(e.target.result);
+    const ex=loadBestiary();
+    let added=0,upd=0;
+    Object.keys(imp).forEach(n=>{ ex[n]?upd++:added++; ex[n]=imp[n]; });
+    saveBestiary(ex); bestiary=ex;
+    buildCRFilter(); fillBestiarySelect();
+    setStatus(statusId,`✔ Bestiario:  nuevas,  actualizadas`,"ok");
+  };
+  r.readAsText(file);
+}
+function importBestiary(){ doImportBestiary("file-input","import-status"); }
+function importBestiaryDesk(){ doImportBestiary("file-input-d","import-status-d"); }
+
+function doImportParty(fileInputId, statusId){
+  const file=document.getElementById(fileInputId).files[0];
+  if(!file) return setStatus(statusId,"⚠️ Selecciona un archivo .json","warn");
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(!data.party||!Array.isArray(data.party)) throw new Error("Falta el campo 'party'");
+      let added=0,upd=0;
+      data.party.forEach(pc=>{
+        if(!pc.name)return;
+        const ex=state.combatants.find(c=>c.name===pc.name&&c.type==="PC");
+        if(ex){
+          if(pc.ac!==undefined) ex.ac=pc.ac;
+          if(pc.hp!==undefined){ ex.maxHp=pc.hp; ex.hp=pc.hp; }
+          if(pc.stats){ ex.stats=pc.stats; ex.dexMod=calcMod(pc.stats.dex||10); }
+          if(pc.sheet) ex.sheet=pc.sheet;
+          upd++;
+        } else {
+          const st=pc.stats||{str:10,dex:10,con:10,int:10,wis:10,cha:10};
+          state.combatants.push({ id:Date.now()+Math.floor(Math.random()*9999), name:pc.name, init:0, ac:pc.ac||10, hp:pc.hp||10, maxHp:pc.hp||10, cr:null, type:"PC", stats:st, dexMod:calcMod(st.dex||10), sheet:pc.sheet||null, icon:PC_ICONS[Math.floor(Math.random()*PC_ICONS.length)] });
+          added++;
+        }
+      });
+      addLog(`📥 Fichas cargadas:  nuevas,  actualizadas.`);
+      setStatus(statusId,`✔  añadidos,  actualizados`,"ok");
+      persist(); render();
+    } catch(err){ setStatus(statusId,"❌ "+err.message,"err"); }
+  };
+  r.readAsText(file);
+}
+function importPartyFile(){ doImportParty("party-file-input","import-status"); }
+function importPartyFileDesk(){ doImportParty("party-file-input-d","import-status-d"); }
+
+function setStatus(id,msg,type){
+  const c={ok:"var(--hp-hi)",warn:"var(--hp-mid)",err:"var(--hp-lo)"}[type]||"var(--mist)";
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.style.color=c; el.innerHTML=msg;
+  setTimeout(()=>{ el.innerHTML=""; },5000);
+}
+
+/* ─── BESTIARY UI ───────────────────────────────────── */
+function buildCRFilter(){
+  const s=document.getElementById("filter-cr");
+  const crs=[...new Set(Object.values(bestiary).map(m=>m.cr))].sort((a,b)=>String(a).localeCompare(String(b),undefined,{numeric:true}));
+  s.innerHTML=`<option value="">CR: Todos</option>`;
+  crs.forEach(cr=>{ if(cr) s.innerHTML+=`<option value="">CR </option>`; });
+}
+
+function fillBestiarySelect(){
+  const s=document.getElementById("bestiary-select");
+  const search=document.getElementById("search-name").value.toLowerCase();
+  const filterCR=document.getElementById("filter-cr").value;
+  const keys=Object.keys(bestiary).sort().filter(n=>(!search||n.toLowerCase().includes(search))&&(!filterCR||bestiary[n].cr===filterCR));
+  s.innerHTML=keys.length?keys.map(n=>{const m=bestiary[n];return`<option value=""> (CR  | AC  | HP )</option>`;}).join(""):`<option value="">— Sin resultados —</option>`;
+  s.dispatchEvent(new Event("change"));
+}
+
+document.getElementById("search-name").addEventListener("input",fillBestiarySelect);
+document.getElementById("filter-cr").addEventListener("change",fillBestiarySelect);
+document.getElementById("bestiary-select").addEventListener("change",e=>{
+  const m=bestiary[e.target.value];
+  const el=document.getElementById("bestiary-info");
+  if(!m){ el.innerHTML=`<p class="text-muted">Selecciona una criatura...</p>`; return; }
+  const safe=e.target.value.replace(/'/g,"\'");
+  el.innerHTML=`
+    <div class="beast-quick">
+      <div class="beast-stat-chip">CR <span></span></div>
+      <div class="beast-stat-chip">AC <span></span></div>
+      <div class="beast-stat-chip">HP <span></span></div>
+      <div class="beast-stat-chip">Inic. <span></span></div>
+    </div>
+    <button onclick="showBeastDetails('')" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center">📖 Ver detalles completos</button>`;
+});
+
+if(Object.keys(bestiary).length>0){ buildCRFilter(); fillBestiarySelect(); }
+
+function addFromBestiary(){
+  const name=document.getElementById("bestiary-select").value;
+  const m=bestiary[name]; if(!m)return;
+  const roll=Math.floor(Math.random()*20)+1;
+  const init=roll+m.dexMod;
+  state.combatants.push({id:Date.now(),name,init,ac:m.ac,hp:m.hp,maxHp:m.hp,cr:m.cr,type:"NPC",stats:m.stats,dexMod:m.dexMod});
+  addLog(`⚔ <strong></strong> añadido (Iniciativa: )`);
+  persist(); render();
+}
+
+function formatBeastMd(raw){
+  // Convert markdown to clean HTML using CSS classes
+  let html = raw
+    .replace(/!\[.*?\]\((.*?)\)/g,'<img src="">')
+    .replace(/^###\s+(.*$)/gim,'<h3></h3>')
+    .replace(/^####\s+(.*$)/gim,'<h4></h4>')
+    .replace(/\*\*(.*?)\*\*/g,'<strong></strong>')
+    .replace(/_([^_]+)_/g,'<em></em>')
+    .replace(/\n\n+/g,'</p><p>')
+    .replace(/\n/g,'<br>');
+  return '<p>' + html + '</p>';
+}
+
+function showBeastDetails(name){
+  const m=bestiary[name]; if(!m)return;
+  document.getElementById("detail-title").textContent=name;
+  const rawWithoutName=m.raw.split("\n").slice(1).join("\n").trim();
+  document.getElementById("detail-content").innerHTML=`<div class="beast-detail"></div>`;
+  document.getElementById("detail-modal").showModal();
+}
+
+/* ─── ADD PC ────────────────────────────────────────── */
+function openAddPcModal(){
+  document.getElementById("pc-name").value="";
+  document.getElementById("pc-ac").value="";
+  document.getElementById("pc-hp").value="";
+  ["str","dex","con","int","wis","cha"].forEach(s=>document.getElementById("pc-"+s).value=10);
+  document.getElementById("add-pc-modal").showModal();
+}
+
+function addPc(){
+  const name=document.getElementById("pc-name").value||"Héroe";
+  const ac=parseInt(document.getElementById("pc-ac").value)||10;
+  const hp=parseInt(document.getElementById("pc-hp").value)||10;
+  const stats={};
+  ["str","dex","con","int","wis","cha"].forEach(s=>stats[s]=parseInt(document.getElementById("pc-"+s).value)||10);
+  state.combatants.push({id:Date.now(),name,init:0,ac,hp,maxHp:hp,cr:null,type:"PC",stats,dexMod:calcMod(stats.dex),icon:PC_ICONS[Math.floor(Math.random()*PC_ICONS.length)]});
+  addLog(`👤 <strong></strong> se unió a la party.`);
+  persist(); render();
+  document.getElementById("add-pc-modal").close();
+}
+
+/* ─── COMBAT ─────────────────────────────────────────── */
+function modifyHp(id,dmg){
+  const c=state.combatants.find(c=>c.id===id);
+  const inp=document.getElementById("hp-"+id);
+  const val=parseInt(inp.value); if(!val)return;
+  if(dmg){ c.hp-=val; addLog(`🩸 <strong></strong> recibe  de daño. (/)`); }
+  else { c.hp=Math.min(c.maxHp,c.hp+val); addLog(`💚 <strong></strong> se cura  HP. (/)`); }
+  inp.value="";
+  persist(); render();
+}
+
+function removeCombatant(id){
+  const c=state.combatants.find(c=>c.id===id);
+  if(c) addLog(`🗑 <strong></strong> eliminado.`);
+  state.combatants=state.combatants.filter(c=>c.id!==id);
+  persist(); render();
+}
+
+function rollPartyInitiative(){
+  let r=false;
+  state.combatants.forEach(c=>{ if(c.type==="PC"){ c.init=Math.floor(Math.random()*20)+1+(c.dexMod||0); r=true; } });
+  if(r) addLog("🎲 Iniciativa de la party relanzada.");
+  persist(); render();
+}
+
+function endEncounterKeepParty(){
+  state.combatants=state.combatants.filter(c=>c.type==="PC");
+  state.combatants.forEach(c=>c.init=0);
+  addLog("🧹 NPCs eliminados. La party permanece.");
+  persist(); render();
+}
+
+/* ─── EDIT ──────────────────────────────────────────── */
+function openEditModal(id){
+  const c=state.combatants.find(c=>c.id===id);
+  document.getElementById("edit-id").value=c.id;
+  document.getElementById("edit-name").value=c.name;
+  document.getElementById("edit-init").value=c.init;
+  document.getElementById("edit-ac").value=c.ac;
+  document.getElementById("edit-hpmax").value=c.maxHp;
+  const st=c.stats||{str:10,dex:10,con:10,int:10,wis:10,cha:10};
+  ["str","dex","con","int","wis","cha"].forEach(s=>document.getElementById("edit-"+s).value=st[s]||10);
+  document.getElementById("edit-modal").showModal();
+}
+
+function saveEdit(){
+  const id=parseInt(document.getElementById("edit-id").value);
+  const c=state.combatants.find(c=>c.id===id);
+  c.name=document.getElementById("edit-name").value;
+  c.init=parseInt(document.getElementById("edit-init").value)||0;
+  c.ac=parseInt(document.getElementById("edit-ac").value)||c.ac;
+  const nm=parseInt(document.getElementById("edit-hpmax").value)||c.maxHp;
+  c.hp+=nm-c.maxHp; c.maxHp=nm;
+  const st={};
+  ["str","dex","con","int","wis","cha"].forEach(s=>st[s]=parseInt(document.getElementById("edit-"+s).value)||10);
+  c.stats=st; c.dexMod=calcMod(st.dex);
+  document.getElementById("edit-modal").close();
+  addLog(`✏️ <strong>${c.name}</strong> editado.`);
+  persist(); render();
+}
+
+/* ─── CHAR SHEET ────────────────────────────────────── */
+function showCharDetails(id){
+  const c=state.combatants.find(c=>c.id===id);
+  if(!c||!c.sheet)return;
+  const sh=c.sheet;
+  document.getElementById("char-modal-title").textContent=c.name+(sh.alias?` — "${sh.alias}"`:``);
+  const stats=c.stats||{str:10,dex:10,con:10,int:10,wis:10,cha:10};
+  let html=``;
+
+  // Meta grid
+  const metaItems=[];
+  if(sh.race)       metaItems.push({l:"Raza",v:sh.race});
+  if(sh.class)      metaItems.push({l:"Clase",v:sh.class});
+  if(sh.background) metaItems.push({l:"Trasfondo",v:sh.background});
+  metaItems.push({l:"AC / HP",v:`${c.ac} / ${c.maxHp}`});
+  html+=`<div class="sheet-meta-grid">${metaItems.map(i=>`<div class="sheet-meta-item"><div class="sheet-meta-label">${i.l}</div><div class="sheet-meta-val">${i.v}</div></div>`).join("")}</div>`;
+
+  // Ability scores
+  html+=`<div class="sheet-stats">${["str","dex","con","int","wis","cha"].map(s=>`<div class="sheet-stat"><div class="sheet-stat-name">${s.toUpperCase()}</div><div class="sheet-stat-val">${stats[s]||10}</div><div class="sheet-stat-mod">${modStr(calcMod(stats[s]||10))}</div></div>`).join("")}</div>`;
+
+  function sec(title,content){ html+=`<div class="sheet-section"><div class="sheet-section-title">${title}</div>${content}</div>`; }
+  function pills(arr){ return `<div class="pill-list">${arr.map(f=>`<span class="pill">${f}</span>`).join("")}</div>`; }
+
+  if(sh.feats?.length)         sec("Feats & Habilidades", pills(sh.feats));
+  if(sh.classFeatures?.length) sec("Rasgos de Clase",     pills(sh.classFeatures));
+  if(sh.weaponMastery?.length) sec("Maestría de Armas",   pills(sh.weaponMastery));
+  if(sh.equipment?.length)     sec("Equipo",               pills(sh.equipment));
+  if(sh.spells){
+    const spellHtml=Object.entries(sh.spells).map(([lvl,list])=>
+      `<div class="spell-level"><div class="spell-level-name">${lvl}</div><div class="pill-list">${list.map(s=>`<span class="pill">${s}</span>`).join("")}</div></div>`
+    ).join("");
+    sec("Magia", spellHtml);
+  }
+  if(sh.meta){
+    sec("Stats", `<div class="pill-list">${Object.entries(sh.meta).map(([k,v])=>`<span class="pill"><span style="color:var(--mist)">${k}:</span> ${v}</span>`).join("")}</div>`);
+  }
+  if(sh.lore) sec("Trasfondo Narrativo",`<p class="sheet-lore">${sh.lore}</p>`);
+
+  document.getElementById("char-modal-body").innerHTML=html;
+  document.getElementById("char-modal").showModal();
+}
+
+/* ─── EVENTS ────────────────────────────────────────── */
+function openEventModal(){
+  const cur=state.currentEvent;
+  const sb=document.getElementById("event-status-box");
+  const ss=document.getElementById("event-start-sec");
+  const es=document.getElementById("event-end-sec");
+  if(cur){
+    sb.innerHTML=`<div style="background:rgba(76,175,130,.08);border:1px solid rgba(76,175,130,.3);border-radius:8px;padding:12px;margin-bottom:12px;font-size:.88rem;color:var(--hp-hi)">⚡ EVENTO ACTIVO: <strong style="color:var(--silver)">${cur.name}</strong>${cur.desc?`<div style="color:var(--mist);font-style:italic;margin-top:4px">${cur.desc}</div>`:""}<div style="color:var(--mist);margin-top:4px;font-size:.78rem">Iniciado: ${cur.startTime}</div></div>`;
+    ss.style.display="none"; es.style.display="block";
+  } else {
+    sb.innerHTML=`<p style="color:var(--mist);font-style:italic;font-size:.85rem;margin-bottom:10px">No hay evento activo. Inicia uno para registrar este encuentro.</p>`;
+    document.getElementById("event-name-input").value="";
+    document.getElementById("event-desc-input").value="";
+    ss.style.display="block"; es.style.display="none";
+  }
+  document.getElementById("event-modal").showModal();
+}
+
+function startEvent(){
+  const name=document.getElementById("event-name-input").value.trim();
+  if(!name)return alert("Escribe un nombre para el evento.");
+  const desc=document.getElementById("event-desc-input").value.trim();
+  state.currentEvent={name,desc,startTime:new Date().toLocaleString(),logs:[...state.logs]};
+  state.logs=[];
+  addLog(`🎭 <strong>EVENTO INICIADO:</strong> ${name}`);
+  if(desc) addLog(`📝 ${desc}`);
+  document.getElementById("event-modal").close();
+  persist(); render();
+}
+
+function endEvent(){
+  if(!state.currentEvent)return;
+  const cur=state.currentEvent;
+  state.savedEvents.push({
+    id:Date.now(), name:cur.name, desc:cur.desc,
+    startTime:cur.startTime, endTime:new Date().toLocaleString(),
+    logs:[...state.logs,...cur.logs],
+    partySummary:state.combatants.filter(c=>c.type==="PC").map(c=>({name:c.name,hp:c.hp,maxHp:c.maxHp}))
+  });
+  state.combatants=state.combatants.filter(c=>c.type==="PC");
+  state.combatants.forEach(c=>c.init=0);
+  state.currentEvent=null; state.logs=[];
+  addLog(`✅ Evento "<strong>${cur.name}</strong>" archivado. Party preservada.`);
+  document.getElementById("event-modal").close();
+  persist(); render();
+}
+
+/* ─── HISTORY ───────────────────────────────────────── */
+function buildHistoryHTML(){
+  if(!state.savedEvents.length) return `<p class="text-muted">No hay eventos archivados todavía.</p>`;
+  return [...state.savedEvents].reverse().map(ev=>`
+    <div class="hist-card">
+      <div class="hist-head" onclick="toggleHist(${ev.id})">
+        <div style="flex:1;min-width:0">
+          <div class="hist-title">${ev.name}</div>
+          ${ev.desc?`<div class="hist-meta">${ev.desc}</div>`:""}
+          <div class="hist-party-row">
+            ${(ev.partySummary||[]).map(p=>{
+              const pct=Math.round((p.hp/p.maxHp)*100);
+              return `<span class="hist-party-chip">${p.name}: ${p.hp}/${p.maxHp} HP</span>`;
+            }).join("")}
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;font-size:.72rem;color:var(--mist)">
+          ${ev.startTime}<br>→ ${ev.endTime||"?"}
+        </div>
+      </div>
+      <div id="hist-${ev.id}" class="hist-body">
+        ${ev.logs.map(l=>`<div class="hist-log-entry">${l}</div>`).join("")}
+        <div style="text-align:right;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">
+          <button class="btn btn-danger btn-xs" onclick="deleteEvent(${ev.id})">🗑 Borrar</button>
+        </div>
+      </div>
+    </div>`).join("");
+}
+
+function toggleHist(id){
+  const el=document.getElementById("hist-"+id);
+  if(!el)return;
+  el.style.display=el.style.display==="block"?"none":"block";
+}
+
+function deleteEvent(id){
+  if(!confirm("¿Borrar permanentemente este registro?"))return;
+  state.savedEvents=state.savedEvents.filter(e=>e.id!==id);
+  persist(); render();
+}
+
+/* ─── PARTY EDITOR ───────────────────────────────────── */
+
+// Track which cards are expanded
+const partyExpanded = new Set();
+
+function buildPartyHTML(){
+  const pcs = state.combatants.filter(c => c.type === "PC");
+  if(!pcs.length) return `<p class="text-muted">No hay personajes en la party.</p>`;
+
+  return pcs.map(c => {
+    const pct = Math.max(0, Math.min(100, (c.hp / c.maxHp) * 100));
+    const bc  = pct > 60 ? "var(--hp-hi)" : pct > 30 ? "var(--hp-mid)" : "var(--hp-lo)";
+    const icon = c.icon || "⚔";
+    const sh = c.sheet || {};
+    const isExp = partyExpanded.has(c.id);
+
+    return `
+    <div class="pced-card ${isExp?"expanded":""}" id="pced-${c.id}">
+      <div class="pced-header" onclick="togglePcExpand(${c.id})">
+        <div class="pced-avatar">${icon}</div>
+        <div style="flex:1;min-width:0">
+          <div class="pced-name">${c.name}</div>
+          ${sh.class ? `<div class="pced-class">${sh.class}</div>` : ""}
+        </div>
+        <div class="pced-quick">
+          <div class="pced-quick-stat">AC<span class="pced-quick-val">${c.ac}</span></div>
+          <div class="pced-quick-stat">HP<span class="pced-quick-val" style="color:${bc}">${c.hp}/${c.maxHp}</span></div>
+        </div>
+        <span class="pced-chevron">▼</span>
+      </div>
+
+      <div class="pced-body">
+
+        <!-- HP -->
+        <div class="pced-section">
+          <div class="pced-section-title">Puntos de Golpe</div>
+          <div class="pced-hp-row">
+            <span style="font-family:Cinzel,serif;font-size:.85rem;color:${bc};min-width:60px">${c.hp} / ${c.maxHp}</span>
+            <div class="pced-hp-track"><div class="pced-hp-fill" style="width:${pct}%;background:${bc}"></div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px">
+            <div class="pced-field">
+              <label>HP Actual</label>
+              <input type="number" value="${c.hp}" onchange="pcedSetHp(${c.id},'hp',this.value)">
+            </div>
+            <div class="pced-field">
+              <label>HP Máximo</label>
+              <input type="number" value="${c.maxHp}" onchange="pcedSetHp(${c.id},'maxHp',this.value)">
+            </div>
+            <div class="pced-field">
+              <label>Curar / Dañar</label>
+              <div style="display:flex;gap:4px">
+                <input type="number" id="pced-hpmod-${c.id}" placeholder="0" style="width:100%;padding:6px 4px">
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:6px">
+            <button class="btn btn-danger btn-sm" style="flex:1" onclick="pcedModHp(${c.id},true)">🩸 Dañar</button>
+            <button class="btn btn-teal btn-sm" style="flex:1" onclick="pcedModHp(${c.id},false)">💚 Curar</button>
+            <button class="btn btn-ghost btn-sm" onclick="pcedRestoreHp(${c.id})">🔄 Full HP</button>
+          </div>
+        </div>
+
+        <!-- COMBATE -->
+        <div class="pced-section">
+          <div class="pced-section-title">Combate</div>
+          <div class="pced-row3">
+            <div class="pced-field"><label>AC</label><input type="number" value="${c.ac}" onchange="pcedField(${c.id},'ac',this.value)"></div>
+            <div class="pced-field"><label>Iniciativa</label><input type="number" value="${c.init}" onchange="pcedField(${c.id},'init',this.value)"></div>
+            <div class="pced-field"><label>Velocidad</label><input type="text" value="${sh.speed||'30 ft'}" onchange="pcedSheet(${c.id},'speed',this.value)"></div>
+          </div>
+        </div>
+
+        <!-- ATRIBUTOS -->
+        <div class="pced-section">
+          <div class="pced-section-title">Atributos</div>
+          <div class="pced-stats-row">
+            ${["str","dex","con","int","wis","cha"].map(s => {
+              const val = (c.stats||{})[s] || 10;
+              const mod = calcMod(val);
+              return `<div class="pced-stat" onclick="pcedStatEdit(${c.id},'${s}',this)">
+                <div class="pced-stat-lbl">${s.toUpperCase()}</div>
+                <div class="pced-stat-val">${val}</div>
+                <div class="pced-stat-mod">${modStr(mod)}</div>
+              </div>`;
+            }).join("")}
+          </div>
+        </div>
+
+        <!-- IDENTIDAD -->
+        <div class="pced-section">
+          <div class="pced-section-title">Identidad</div>
+          <div class="pced-row2" style="margin-bottom:6px">
+            <div class="pced-field"><label>Nombre</label><input type="text" value="${esc(c.name)}" onchange="pcedField(${c.id},'name',this.value)"></div>
+            <div class="pced-field"><label>Alias / Apodo</label><input type="text" value="${esc(sh.alias)}" onchange="pcedSheet(${c.id},'alias',this.value)"></div>
+          </div>
+          <div class="pced-row2" style="margin-bottom:6px">
+            <div class="pced-field"><label>Raza</label><input type="text" value="${esc(sh.race)}" onchange="pcedSheet(${c.id},'race',this.value)"></div>
+            <div class="pced-field"><label>Clase</label><input type="text" value="${esc(sh.class)}" onchange="pcedSheet(${c.id},'class',this.value)"></div>
+          </div>
+          <div class="pced-row2">
+            <div class="pced-field"><label>Trasfondo</label><input type="text" value="${esc(sh.background)}" onchange="pcedSheet(${c.id},'background',this.value)"></div>
+            <div class="pced-field"><label>Icono</label><input type="text" value="${esc(icon)}" onchange="pcedField(${c.id},'icon',this.value)" style="font-size:1.1rem;text-align:center"></div>
+          </div>
+        </div>
+
+        <!-- FEATS -->
+        <div class="pced-section">
+          <div class="pced-section-title">Feats & Habilidades</div>
+          <div class="pced-list" id="pced-feats-${c.id}">
+            ${(sh.feats||[]).map((f,i)=>`
+              <div class="pced-list-item">
+                <input type="text" value="${esc(f)}" onchange="pcedListEdit(${c.id},'feats',${i},this.value)">
+                <button class="pced-list-del" onclick="pcedListRemove(${c.id},'feats',${i})">✕</button>
+              </div>`).join("")}
+          </div>
+          <div class="pced-add-row">
+            <input class="pced-add-input" id="pced-feats-add-${c.id}" placeholder="Nuevo feat..." onkeydown="if(event.key==='Enter')pcedListAdd(${c.id},'feats')">
+            <button class="pced-add-btn" onclick="pcedListAdd(${c.id},'feats')">+ Añadir</button>
+          </div>
+        </div>
+
+        <!-- CLASS FEATURES -->
+        <div class="pced-section">
+          <div class="pced-section-title">Rasgos de Clase</div>
+          <div class="pced-list" id="pced-classFeatures-${c.id}">
+            ${(sh.classFeatures||[]).map((f,i)=>`
+              <div class="pced-list-item">
+                <input type="text" value="${esc(f)}" onchange="pcedListEdit(${c.id},'classFeatures',${i},this.value)">
+                <button class="pced-list-del" onclick="pcedListRemove(${c.id},'classFeatures',${i})">✕</button>
+              </div>`).join("")}
+          </div>
+          <div class="pced-add-row">
+            <input class="pced-add-input" id="pced-classFeatures-add-${c.id}" placeholder="Nuevo rasgo..." onkeydown="if(event.key==='Enter')pcedListAdd(${c.id},'classFeatures')">
+            <button class="pced-add-btn" onclick="pcedListAdd(${c.id},'classFeatures')">+ Añadir</button>
+          </div>
+        </div>
+
+        <!-- EQUIPO -->
+        <div class="pced-section">
+          <div class="pced-section-title">Equipo</div>
+          <div class="pced-list" id="pced-equipment-${c.id}">
+            ${(sh.equipment||[]).map((f,i)=>`
+              <div class="pced-list-item">
+                <input type="text" value="${esc(f)}" onchange="pcedListEdit(${c.id},'equipment',${i},this.value)">
+                <button class="pced-list-del" onclick="pcedListRemove(${c.id},'equipment',${i})">✕</button>
+              </div>`).join("")}
+          </div>
+          <div class="pced-add-row">
+            <input class="pced-add-input" id="pced-equipment-add-${c.id}" placeholder="Nuevo ítem..." onkeydown="if(event.key==='Enter')pcedListAdd(${c.id},'equipment')">
+            <button class="pced-add-btn" onclick="pcedListAdd(${c.id},'equipment')">+ Añadir</button>
+          </div>
+        </div>
+
+        <!-- HECHIZOS -->
+        <div class="pced-section">
+          <div class="pced-section-title">
+            <span>Magia</span>
+            <button class="pced-add-btn" onclick="pcedAddSpellLevel(${c.id})">+ Nivel</button>
+          </div>
+          <div id="pced-spells-${c.id}">
+            ${Object.entries(sh.spells||{}).map(([lvl,list])=>`
+              <div class="pced-spell-group">
+                <div class="pced-spell-group-head">
+                  <span>${lvl}</span>
+                  <button class="pced-list-del" onclick="pcedRemoveSpellLevel(${c.id},'${lvl.replace(/'/g,"\\'")}')">✕ nivel</button>
+                </div>
+                <div class="pced-list" id="pced-spell-${c.id}-${lvl.replace(/\s/g,'_')}">
+                  ${list.map((s,i)=>`
+                    <div class="pced-list-item">
+                      <input type="text" value="${esc(s)}" onchange="pcedSpellEdit(${c.id},'${lvl.replace(/'/g,"\\'")}',${i},this.value)">
+                      <button class="pced-list-del" onclick="pcedSpellRemove(${c.id},'${lvl.replace(/'/g,"\\'")}',${i})">✕</button>
+                    </div>`).join("")}
+                </div>
+                <div class="pced-add-row">
+                  <input class="pced-add-input" id="pced-spell-add-${c.id}-${lvl.replace(/\s/g,'_')}" placeholder="Hechizo..." onkeydown="if(event.key==='Enter')pcedSpellAdd(${c.id},'${lvl.replace(/'/g,"\\'")}')">
+                  <button class="pced-add-btn" onclick="pcedSpellAdd(${c.id},'${lvl.replace(/'/g,"\\'")}')">+ Añadir</button>
+                </div>
+              </div>`).join("")}
+          </div>
+        </div>
+
+        <!-- LORE -->
+        <div class="pced-section">
+          <div class="pced-section-title">Trasfondo Narrativo</div>
+          <div class="pced-field">
+            <textarea onchange="pcedSheet(${c.id},'lore',this.value)">${sh.lore||''}</textarea>
+
+```
+      </div>
+    </div>
+
+    <!-- ACCIONES -->
+    <div class="pced-delete-row">
+      <button class="btn btn-ghost btn-sm" onclick="showCharDetails(${c.id})">📖 Ver Ficha</button>
+      <button class="btn btn-danger btn-sm" onclick="pcedDelete(${c.id})">🗑 Eliminar Personaje</button>
+    </div>
+
+  </div>
+</div>`;
+```
+
+}).join(””) + `
+
+  <div style="margin-top:8px">
+    <button class="btn btn-azure" style="width:100%;justify-content:center;padding:9px" onclick="openAddPcModal()">+ Añadir Personaje</button>
+  </div>`;
+}
+
+/* ── Party editor actions ─────────────────────────────── */
+function togglePcExpand(id){
+if(partyExpanded.has(id)) partyExpanded.delete(id);
+else partyExpanded.add(id);
+renderPartyCards();
+}
+
+function pcedField(id, field, val){
+const c = state.combatants.find(c=>c.id===id); if(!c)return;
+if(field===‘name’){ c.name = val; }
+else if(field===‘ac’){ c.ac = parseInt(val)||c.ac; }
+else if(field===‘init’){ c.init = parseInt(val)||0; }
+else if(field===‘icon’){ c.icon = val||c.icon; }
+persist(); renderPartyCards(); render();
+}
+
+function pcedSheet(id, field, val){
+const c = state.combatants.find(c=>c.id===id); if(!c)return;
+if(!c.sheet) c.sheet = {};
+c.sheet[field] = val;
+persist(); renderPartyCards(); render();
+}
+
+function pcedSetHp(id, field, val){
+const c = state.combatants.find(c=>c.id===id); if(!c)return;
+const n = parseInt(val);
+if(isNaN(n)) return;
+if(field===‘hp’) c.hp = Math.min(c.maxHp, Math.max(-999, n));
+else if(field===‘maxHp’){ const diff=n-c.maxHp; c.maxHp=n; c.hp=Math.max(0,c.hp+diff); }
+persist(); renderPartyCards(); render();
+}
+
+function pcedModHp(id, dmg){
+const c = state.combatants.find(c=>c.id===id); if(!c)return;
+const inp = document.getElementById(“pced-hpmod-”+id);
+const val = parseInt(inp?.value); if(!val||isNaN(val)) return;
+if(dmg){ c.hp -= val; addLog(`🩸 <strong>${c.name}</strong> recibe ${val} de daño. (${c.hp}/${c.maxHp})`); }
+else { c.hp = Math.min(c.maxHp, c.hp+val); addLog(`💚 <strong>${c.name}</strong> se cura ${val} HP. (${c.hp}/${c.maxHp})`); }
+if(inp) inp.value=””;
+persist(); renderPartyCards(); render();
+}
+
+function pcedRestoreHp(id){
+const c = state.combatants.find(c=>c.id===id); if(!c)return;
+c.hp = c.maxHp;
+addLog(`🔄 <strong>${c.name}</strong> restaurado a HP completo.`);
+persist(); renderPartyCards(); render();
+}
+
+function pcedStatEdit(id, stat, el){
+if(el.querySelector(‘input’)) return;
+const c = state.combatants.find(c=>c.id===id); if(!c)return;
+const cur = (c.stats||{})[stat]||10;
+el.innerHTML = `<div class="pced-stat-lbl">${stat.toUpperCase()}</div><input type="number" value="${cur}" style="width:36px;text-align:center;background:transparent;border:none;border-bottom:1px solid var(--gold);color:var(--silver);font-family:Cinzel,serif;font-size:.9rem;outline:none">`;
+const inp = el.querySelector(‘input’);
+inp.focus(); inp.select();
+function commit(){
+const n = parseInt(inp.value);
+if(!isNaN(n) && n>=1 && n<=30){
+if(!c.stats) c.stats={};
+c.stats[stat] = n;
+if(stat===‘dex’) c.dexMod = calcMod(n);
+addLog(`📊 <strong>${c.name}</strong> ${stat.toUpperCase()} → ${n} (${modStr(calcMod(n))})`);
+persist();
+}
+renderPartyCards();
+}
+inp.addEventListener(‘blur’, commit);
+inp.addEventListener(‘keydown’, e=>{ if(e.key===‘Enter’){e.preventDefault();inp.blur();} if(e.key===‘Escape’){inp.removeEventListener(‘blur’,commit);renderPartyCards();} });
+}
+
+function pcedListEdit(id, listKey, idx, val){
+const c = state.combatants.find(c=>c.id===id); if(!c)return;
+if(!c.sheet) c.sheet={};
+if(!c.sheet[listKey]) c.sheet[listKey]=[];
+c.sheet[listKey][idx] = val;
+persist();
+}
+
+function pcedListRemove(id, listKey, idx){
+const c = state.combatants.find(c=>c.id===id); if(!c)return;
+if(!c.sheet?.[listKey]) return;
+c.sheet[listKey].splice(idx,1);
+persist(); renderPartyCards();
+}
+
+function pcedListAdd(id, listKey){
+const c = state.combatants.find(c=>c.id===id); if(!c)return;
+const inp = document.getElementById(`pced-${listKey}-add-${id}`);
+const val = inp?.value?.trim(); if(!val) return;
+if(!c.sheet) c.sheet={};
+if(!c.sheet[listKey]) c.sheet[listKey]=[];
+c.sheet[listKey].push(val);
+persist(); renderPartyCards();
+}
+
+function pcedSpellEdit(id, lvl, idx, val){
+const c = state.combatants.find(c=>c.id===id); if(!c)return;
+if(!c.sheet?.spells?.[lvl]) return;
+c.sheet.spells[lvl][idx] = val;
+persist();
+}
+
+function pcedSpellRemove(id, lvl, idx){
+const c = state.combatants.find(c=>c.id===id); if(!c)return;
+if(!c.sheet?.spells?.[lvl]) return;
+c.sheet.spells[lvl].splice(idx,1);
+persist(); renderPartyCards();
+}
+
+function pcedSpellAdd(id, lvl){
+const c = state.combatants.find(c=>c.id===id); if(!c)return;
+const key = `pced-spell-add-${id}-${lvl.replace(/\s/g,'_')}`;
+const inp = document.getElementById(key);
+const val = inp?.value?.trim(); if(!val) return;
+if(!c.sheet) c.sheet={};
+if(!c.sheet.spells) c.sheet.spells={};
+if(!c.sheet.spells[lvl]) c.sheet.spells[lvl]=[];
+c.sheet.spells[lvl].push(val);
+persist(); renderPartyCards();
+}
+
+function pcedAddSpellLevel(id){
+const lvl = prompt(“Nombre del nivel/grupo de magia (ej: Trucos, Nivel 3):”);
+if(!lvl?.trim()) return;
+const c = state.combatants.find(c=>c.id===id); if(!c)return;
+if(!c.sheet) c.sheet={};
+if(!c.sheet.spells) c.sheet.spells={};
+if(!c.sheet.spells[lvl.trim()]) c.sheet.spells[lvl.trim()]=[];
+persist(); renderPartyCards();
+}
+
+function pcedRemoveSpellLevel(id, lvl){
+if(!confirm(`¿Eliminar el nivel "${lvl}" completo?`)) return;
+const c = state.combatants.find(c=>c.id===id); if(!c)return;
+if(c.sheet?.spells) delete c.sheet.spells[lvl];
+persist(); renderPartyCards();
+}
+
+function pcedDelete(id){
+const c = state.combatants.find(c=>c.id===id); if(!c)return;
+if(!confirm(`¿Eliminar a ${c.name} de la party permanentemente?`)) return;
+state.combatants = state.combatants.filter(c=>c.id!==id);
+partyExpanded.delete(id);
+addLog(`🗑 <strong>${c.name}</strong> eliminado de la party.`);
+persist(); renderPartyCards(); render();
+}
+
+/* ─── RENDER PARTY CARDS ─────────────────────────────── */
+function renderPartyCards(){
+const html = buildPartyHTML();
+const side = document.getElementById(“party-cards-side”);
+const mob  = document.getElementById(“party-cards-mobile”);
+if(side) side.innerHTML = html;
+if(mob)  mob.innerHTML  = html;
+}
+
+// Safe HTML attribute value escaping
+function esc(v){ return String(v||’’).replace(/&/g,’&’).replace(/”/g,’"’).replace(/</g,’<’).replace(/>/g,’>’); }
+
+/* ─── FORMAT / DOWNLOAD ─────────────────────────────── */
+function showFormatDoc(){
+document.getElementById(“format-pre-box”).textContent=JSON.stringify(SAMPLE_JSON,null,2);
+document.getElementById(“format-modal”).showModal();
+}
+function downloadSampleJson(){
+const a=document.createElement(“a”);
+a.href=URL.createObjectURL(new Blob([JSON.stringify(SAMPLE_JSON,null,2)],{type:“application/json”}));
+a.download=“ficha_personaje_ejemplo.json”; a.click();
+}
+
+/* ─── MOBILE NAV ─────────────────────────────────────── */
+const MOBILE_SECTIONS=[“enc”,“import”,“party”,“log”,“history”];
+function showSection(name, btn){
+if(window.innerWidth>=1024)return;
+MOBILE_SECTIONS.forEach(id=>{
+const s=document.getElementById(“section-”+id)||(id===“enc”?document.querySelector(”.section-main”):null);
+if(s) s.classList.remove(“visible”);
+});
+document.querySelectorAll(”.mnav-btn”).forEach(b=>b.classList.remove(“active”));
+
+// Special: “bestiary” and “party” / “log” / “history” are shown differently on mobile
+if(name===“enc”){
+document.querySelector(”.section-main”).classList.add(“visible”);
+// hide bestiary sub-card on mobile enc view
+const bc=document.getElementById(“section-bestiary”);
+if(bc) bc.style.display=“none”;
+} else if(name===“bestiary”){
+document.querySelector(”.section-main”).classList.add(“visible”);
+const bc=document.getElementById(“section-bestiary”);
+if(bc){ bc.style.display=“block”; bc.scrollIntoView({behavior:“smooth”}); }
+} else {
+const s=document.getElementById(“section-”+name);
+if(s) s.classList.add(“visible”);
+}
+if(btn) btn.classList.add(“active”);
+}
+
+/* ─── DESKTOP SIDE TABS ─────────────────────────────── */
+function switchSide(name, btn){
+document.querySelectorAll(”.side-panel”).forEach(p=>p.classList.remove(“active”));
+document.querySelectorAll(”.side-tab-btn”).forEach(b=>b.classList.remove(“active”));
+document.getElementById(“side-”+name).classList.add(“active”);
+if(btn) btn.classList.add(“active”);
+}
+
+/* ─── LOG ───────────────────────────────────────────── */
+function addLog(msg){
+const t=new Date().toLocaleTimeString();
+const entry=`<div class="log-entry"><span class="log-time">${t}</span><span class="log-msg">${msg}</span></div>`;
+state.logs.unshift(entry);
+}
+
+/* ─── INLINE EDIT ────────────────────────────────────── */
+function startInlineEdit(id, field, currentVal, displayEl){
+// If already editing this cell, ignore
+if(displayEl.querySelector(’.inline-input’)) return;
+const inp = document.createElement(‘input’);
+inp.className = ‘inline-input’;
+inp.type = ‘number’;
+inp.value = currentVal;
+inp.style.width = field===‘init’ ? ‘44px’ : field===‘ac’ ? ‘44px’ : ‘60px’;
+displayEl.innerHTML = ‘’;
+displayEl.appendChild(inp);
+inp.focus();
+inp.select();
+function commit(){
+const val = parseInt(inp.value);
+if(!isNaN(val)){
+const c = state.combatants.find(c=>c.id===id);
+if(!c) return;
+if(field===‘init’) { c.init=val; addLog(`🎲 Iniciativa de <strong>${c.name}</strong> → ${val}`); }
+else if(field===‘ac’) { c.ac=val; addLog(`🛡 AC de <strong>${c.name}</strong> → ${val}`); }
+else if(field===‘hpmax’) {
+const diff=val-c.maxHp; c.maxHp=val; c.hp=Math.max(0,c.hp+diff);
+addLog(`❤ HP máx de <strong>${c.name}</strong> → ${val}`);
+}
+persist();
+}
+render();
+}
+inp.addEventListener(‘blur’, commit);
+inp.addEventListener(‘keydown’, e=>{
+if(e.key===‘Enter’){ e.preventDefault(); inp.blur(); }
+if(e.key===‘Escape’){ inp.removeEventListener(‘blur’,commit); render(); }
+});
+}
+
+/* ─── RESET ─────────────────────────────────────────── */
+function hardReset(){
+if(confirm(”¿Resetear TODA la app? La party, logs y eventos se borrarán. El bestiario se mantiene.”))
+{ localStorage.removeItem(“dnd_v9”); location.reload(); }
+}
+
+/* ─── RENDER ─────────────────────────────────────────── */
+function render(){
+// Encounter table
+const tbody=document.getElementById(“combatants-list”);
+tbody.innerHTML=””;
+[…state.combatants].sort((a,b)=>b.init-a.init).forEach(c=>{
+const pct=Math.max(0,Math.min(100,(c.hp/c.maxHp)*100));
+const bc=pct>60?“var(–hp-hi)”:pct>30?“var(–hp-mid)”:“var(–hp-lo)”;
+const isNPC=c.type===“NPC”;
+const safe=c.name.replace(/’/g,”\’”);
+const nameHTML=isNPC
+? `<span class="cname npc" onclick="showBeastDetails('${safe}')" title="Ver stats">${c.name}</span>`
+: (c.sheet
+? `<span class="cname pc has-sheet" onclick="showCharDetails(${c.id})" title="Ver ficha">${c.name}</span>`
+: `<span class="cname pc">${c.name}</span>`);
+const highInit=c.init>=15;
+const tr=document.createElement(“tr”);
+if(c.hp<=0) tr.classList.add(“dead”);
+tr.innerHTML=` <td> <span class="inline-val ${highInit?"init-high":""}"  style="${highInit?"color:var(--gold-lt)":"color:var(--azure)"};font-family:Cinzel,serif;font-size:.85rem;font-weight:600" onclick="startInlineEdit(${c.id},'init',${c.init},this)" title="Clic para editar iniciativa">${c.init}</span> </td> <td> ${nameHTML} <div class="ctype">${c.type}${c.cr?" · CR "+c.cr:""}</div> </td> <td> <span class="inline-val" style="color:var(--silver)" onclick="startInlineEdit(${c.id},'ac',${c.ac},this)" title="Clic para editar AC">${c.ac}</span> </td> <td> <div style="display:flex;align-items:center;gap:5px"> <div> <span class="inline-val" style="color:${bc}" onclick="startInlineEdit(${c.id},'hpmax',${c.maxHp},this)" title="Clic para editar HP máx">${c.hp}<span style="color:var(--mist);font-size:.75rem;font-weight:400">/${c.maxHp}</span></span> <div style="height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;margin-top:2px;min-width:50px"> <div style="width:${pct}%;height:100%;background:${bc};border-radius:2px;transition:width .3s,background .3s"></div> </div> </div> </div> </td> <td> <div class="hp-ctrl"> <input id="hp-${c.id}" type="number" placeholder="0" min="0" style="width:50px;padding:4px"> <button class="btn btn-danger btn-xs" onclick="modifyHp(${c.id},true)">Daño</button> <button class="btn btn-teal btn-xs" onclick="modifyHp(${c.id},false)">Cura</button> </div> </td> <td> <div class="act-btns"> <button class="btn btn-ghost btn-xs" onclick="openEditModal(${c.id})" title="Editar todo">✏️</button> <button class="btn btn-danger btn-xs" onclick="removeCombatant(${c.id})" title="Eliminar">🗑</button> </div> </td>`;
+tbody.appendChild(tr);
+});
+
+// Logs
+const logHTML=state.logs.join(””);
+const lb=document.getElementById(“log-box”);
+if(lb) lb.innerHTML=logHTML;
+const lbm=document.getElementById(“log-box-mobile”);
+if(lbm) lbm.innerHTML=logHTML;
+
+// Party cards
+renderPartyCards();
+
+// History
+const hHTML=buildHistoryHTML();
+const hs=document.getElementById(“history-list-side”);
+if(hs) hs.innerHTML=hHTML;
+const hm=document.getElementById(“history-list-mobile”);
+if(hm) hm.innerHTML=hHTML;
+
+// Event badge
+const badge=document.getElementById(“event-badge”);
+if(state.currentEvent){
+badge.className=“evt-pill active”;
+const short=state.currentEvent.name.length>22?state.currentEvent.name.slice(0,22)+”…”:state.currentEvent.name;
+badge.innerHTML=`<span class="evt-pulse"></span>${short}`;
+} else {
+badge.className=“evt-pill”;
+badge.innerHTML=“SIN EVENTO”;
+}
+
+// Bestiary section visibility on mobile/desktop
+const bsec=document.getElementById(“section-bestiary”);
+if(bsec){
+bsec.style.display=window.innerWidth>=1024?“block”:“none”;
+}
+}
+
+// Initial mobile section
+if(window.innerWidth<1024){
+document.querySelector(”.section-main”).classList.add(“visible”);
+const bsec=document.getElementById(“section-bestiary”);
+if(bsec) bsec.style.display=“none”;
+}
+
+render();
+</script>
+
+</body>
+</html>

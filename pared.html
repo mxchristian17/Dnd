@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paredón del Calabozo — D&D 5e</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cinzel+Decorative:wght@700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root { --gold:#c9a84c; --gold2:#f0c94a; --parchment:#f2e8cc; --red:#8b1a1a; --red2:#c04040; --blue:#4a6b9a; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+background:radial-gradient(ellipse at center,#110a06 0%,#000 100%);
+min-height:100vh; font-family:‘IM Fell English’,serif;
+display:flex; flex-direction:column; align-items:center;
+overflow-x:hidden; color:#ddd;
+}
+
+/* ── HEADER ── */
+.header { width:100%; display:flex; justify-content:center; align-items:center; gap:20px; padding:16px 0 4px; }
+.torch  { display:flex; flex-direction:column; align-items:center; gap:4px; }
+.flame  {
+width:16px; height:30px;
+background:radial-gradient(ellipse at 50% 80%,#fff 0%,#ffd700 20%,#ff8c00 55%,#ff4500 85%,transparent 100%);
+border-radius:50% 50% 20% 20%; animation:flicker .09s infinite alternate;
+filter:drop-shadow(0 0 8px #ff8c00) drop-shadow(0 0 20px #ff6600);
+}
+@keyframes flicker {
+0%  {transform:skewX(-3deg) scaleY(1);   opacity:.9;}
+33% {transform:skewX(2deg) scaleY(.95);  opacity:1;}
+66% {transform:skewX(-1deg) scaleY(1.05);opacity:.85;}
+100%{transform:skewX(3deg) scaleY(.97);  opacity:.95;}
+}
+.handle { width:7px; height:26px; background:linear-gradient(to bottom,#5c3a1e,#3a200c); border-radius:2px; }
+h1 { font-family:‘Cinzel Decorative’,serif; color:var(–gold); font-size:clamp(1rem,3.2vw,1.9rem); text-shadow:0 0 18px rgba(201,168,76,.8),0 2px 4px #000; letter-spacing:3px; line-height:1.3; text-align:center; }
+.subtitle { font-family:‘Cinzel’,serif; color:#a08060; font-size:.72rem; letter-spacing:4px; margin-top:3px; text-align:center; }
+
+/* ── TOP BAR ── */
+.topbar {
+display:flex; flex-wrap:wrap; align-items:center; justify-content:center;
+gap:14px; padding:8px 16px 4px;
+font-family:‘Cinzel’,serif; font-size:.72rem; color:var(–gold); letter-spacing:2px;
+}
+.topbar label { display:flex; align-items:center; gap:7px; white-space:nowrap; }
+.topbar input[type=number] {
+width:52px; background:rgba(0,0,0,.6); border:1px solid rgba(201,168,76,.4);
+color:var(–gold); font-family:‘Cinzel’,serif; font-size:.88rem;
+text-align:center; padding:4px; border-radius:2px; outline:none;
+}
+.topbar input[type=number]:focus { border-color:var(–gold); box-shadow:0 0 6px rgba(201,168,76,.4); }
+
+/* Language toggle */
+.lang-btn {
+padding:5px 14px; background:rgba(0,0,0,.5);
+border:1px solid rgba(201,168,76,.45); color:var(–gold);
+font-family:‘Cinzel’,serif; font-size:.68rem; letter-spacing:2px;
+cursor:pointer; border-radius:2px; transition:all .2s; white-space:nowrap;
+}
+.lang-btn:hover { background:rgba(201,168,76,.15); }
+.lang-btn.active { background:rgba(201,168,76,.2); border-color:var(–gold); box-shadow:0 0 8px rgba(201,168,76,.3); }
+
+/* Reset button */
+.reset-btn {
+padding:5px 14px; background:rgba(80,10,10,.5);
+border:1px solid rgba(180,40,40,.5); color:#c06060;
+font-family:‘Cinzel’,serif; font-size:.68rem; letter-spacing:2px;
+cursor:pointer; border-radius:2px; transition:all .2s; white-space:nowrap;
+}
+.reset-btn:hover { background:rgba(139,26,26,.3); color:#e08080; border-color:#8b1a1a; }
+
+/* ── LEGEND / STATS ── */
+.legend { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; font-family:‘Cinzel’,serif; font-size:.6rem; letter-spacing:2px; color:#806040; padding:3px 0 6px; }
+.legend span { display:flex; align-items:center; gap:5px; }
+.stats { font-family:‘Cinzel’,serif; font-size:.68rem; color:#806040; letter-spacing:2px; text-align:center; padding:2px 0 8px; }
+
+/* ── WALL ── */
+.wall-wrap { width:min(1120px,98vw); padding:10px; background:linear-gradient(to bottom,#180d07,#0d0604); border:5px solid #120905; box-shadow:0 0 70px rgba(0,0,0,.95),inset 0 0 25px rgba(0,0,0,.5); margin-bottom:50px; }
+.wall { display:flex; flex-direction:column; gap:4px; }
+.brick-row { display:flex; gap:4px; }
+.brick-row.offset { margin-left:50px; }
+
+.brick { flex:1; min-width:68px; height:50px; position:relative; cursor:pointer; border-radius:2px; overflow:hidden; transition:transform .15s ease,filter .2s ease; user-select:none; }
+.brick .face { position:absolute; inset:0; border-radius:2px; transition:background .4s; }
+.brick:nth-child(5n+1) .face { background:linear-gradient(135deg,#6b4f3a,#4a3326 40%,#5c4030 70%,#7a5940); }
+.brick:nth-child(5n+2) .face { background:linear-gradient(135deg,#5a4235,#3d2e25 40%,#4d3828 70%,#6a5040); }
+.brick:nth-child(5n+3) .face { background:linear-gradient(135deg,#7a5a45,#5a4035 40%,#6a4d38 70%,#8a6545); }
+.brick:nth-child(5n+4) .face { background:linear-gradient(135deg,#4a3528,#3a2820 40%,#453020 70%,#5a4030); }
+.brick:nth-child(5n+0) .face { background:linear-gradient(135deg,#8c6b50,#6b4f3a 40%,#7a5940 70%,#9a7060); }
+.brick .edge-t { position:absolute; top:0; left:0; right:0; height:3px; background:rgba(255,255,255,.12); z-index:2; pointer-events:none; }
+.brick .edge-l { position:absolute; top:0; left:0; bottom:0; width:2px; background:rgba(255,255,255,.07); z-index:2; pointer-events:none; }
+.brick .shad   { position:absolute; bottom:0; left:0; right:0; height:8px; background:linear-gradient(to top,rgba(0,0,0,.5),transparent); z-index:2; pointer-events:none; }
+.brick:nth-child(4n+1)::before { content:’’; position:absolute; width:1px; height:25px; background:rgba(0,0,0,.35); top:6px; left:28%; transform:rotate(6deg); z-index:3; pointer-events:none; }
+.brick:nth-child(7n+3)::before { content:’’; position:absolute; width:22px; height:1px; background:rgba(0,0,0,.3); top:55%; left:38%; transform:rotate(8deg); z-index:3; pointer-events:none; }
+
+/* Hover tip */
+.brick:not(.revealed) .tip { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; opacity:0; transition:opacity .25s; z-index:5; }
+.brick:not(.revealed):hover .tip { opacity:1; }
+.tip .dc-lbl { font-family:‘Cinzel’,serif; font-size:.6rem; font-weight:700; color:var(–gold); text-shadow:0 0 6px #000,0 1px 2px #000; line-height:1.1; }
+.tip .eye { font-size:.9rem; }
+.brick:not(.revealed):hover { transform:translateY(-2px) scale(1.04); filter:brightness(1.35); z-index:10; }
+.brick:not(.revealed):hover .face::after { content:’’; position:absolute; inset:0; box-shadow:0 0 14px 4px rgba(201,168,76,.5); border:1px solid rgba(201,168,76,.55); border-radius:2px; }
+
+/* ── REVEALED STATES ── */
+.brick.revealed { cursor:pointer; }
+.brick.revealed:hover { transform:none; filter:none; }
+
+.brick.rev-good .face { background:linear-gradient(135deg,#2a1f08,#1a1205 40%,#251a07 70%,#302010) !important; box-shadow:inset 0 0 12px rgba(201,168,76,.35); }
+.brick.rev-good::after { content:‘✦’; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:1.4rem; color:var(–gold); z-index:6; pointer-events:none; animation:pulse-gold 2.5s ease-in-out infinite; }
+@keyframes pulse-gold { 0%,100%{text-shadow:0 0 8px rgba(201,168,76,.8),0 0 18px rgba(201,168,76,.4);} 50%{text-shadow:0 0 14px rgba(240,201,74,1),0 0 30px rgba(240,201,74,.7);} }
+
+.brick.rev-bad .face { background:linear-gradient(135deg,#1a0820,#100514 40%,#180a1e 70%,#200a18) !important; box-shadow:inset 0 0 12px rgba(120,40,160,.4); }
+.brick.rev-bad::after { content:‘☠’; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:1.2rem; color:#b060d0; z-index:6; pointer-events:none; animation:pulse-purple 2.5s ease-in-out infinite; }
+@keyframes pulse-purple { 0%,100%{text-shadow:0 0 8px rgba(180,80,220,.7);} 50%{text-shadow:0 0 16px rgba(220,120,255,1),0 0 30px rgba(140,60,180,.8);} }
+
+.brick.rev-neutral .face { background:linear-gradient(135deg,#08121f,#050d18 40%,#071020 70%,#091525) !important; box-shadow:inset 0 0 12px rgba(60,100,170,.35); }
+.brick.rev-neutral::after { content:‘◈’; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:1.3rem; color:#6a9adf; z-index:6; pointer-events:none; animation:pulse-blue 2.5s ease-in-out infinite; }
+@keyframes pulse-blue { 0%,100%{text-shadow:0 0 8px rgba(100,150,220,.6);} 50%{text-shadow:0 0 16px rgba(140,180,255,1);} }
+
+.brick.rev-fail .face { background:linear-gradient(135deg,#1a0505,#100303 40%,#150404 70%,#1e0606) !important; box-shadow:inset 0 0 14px rgba(139,26,26,.5); }
+.brick.rev-fail::after { content:’’; position:absolute; inset:0; z-index:6; pointer-events:none; background:radial-gradient(circle at 30% 40%,rgba(180,30,30,.25) 0%,transparent 50%),radial-gradient(circle at 70% 60%,rgba(160,20,20,.2) 0%,transparent 40%); }
+.brick.rev-fail .fail-icon { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:1.1rem; color:#8b2a2a; z-index:7; pointer-events:none; text-shadow:0 0 6px rgba(180,30,30,.8); animation:pulse-red 2s ease-in-out infinite; }
+@keyframes pulse-red { 0%,100%{color:#6a1a1a;text-shadow:0 0 4px rgba(140,20,20,.5);} 50%{color:#c04040;text-shadow:0 0 12px rgba(220,60,60,.9);} }
+
+.brick.revealed .rev-badge { position:absolute; bottom:3px; left:50%; transform:translateX(-50%); font-family:‘Cinzel’,serif; font-size:.48rem; letter-spacing:1px; background:rgba(0,0,0,.6); padding:1px 4px; border-radius:2px; z-index:8; pointer-events:none; white-space:nowrap; }
+.brick.rev-good    .rev-badge { color:var(–gold); }
+.brick.rev-bad     .rev-badge { color:#b060d0; }
+.brick.rev-neutral .rev-badge { color:#6a9adf; }
+.brick.rev-fail    .rev-badge { color:#8b2a2a; }
+
+/* ── MODAL ── */
+.overlay { position:fixed; inset:0; background:rgba(0,0,0,.87); display:flex; align-items:center; justify-content:center; z-index:1000; opacity:0; pointer-events:none; transition:opacity .3s; backdrop-filter:blur(4px); }
+.overlay.open { opacity:1; pointer-events:all; }
+.modal { width:min(570px,95vw); background:radial-gradient(ellipse at 30% 20%,rgba(201,168,76,.07),transparent 60%),linear-gradient(135deg,#1c1005,#0d0804 50%,#160e04); border:2px solid #4a4040; border-radius:4px; padding:22px 26px 18px; position:relative; transform:scale(.82) translateY(22px); transition:transform .32s cubic-bezier(.34,1.56,.64,1); box-shadow:0 0 80px rgba(0,0,0,.95); max-height:92vh; overflow-y:auto; }
+.overlay.open .modal { transform:scale(1) translateY(0); }
+.modal.s-good    { border-color:var(–gold);  box-shadow:0 0 80px rgba(0,0,0,.95),0 0 35px rgba(201,168,76,.25); }
+.modal.s-bad     { border-color:#7a3a9a;       box-shadow:0 0 80px rgba(0,0,0,.95),0 0 30px rgba(120,40,160,.3); }
+.modal.s-neutral { border-color:#3a4a6a;       box-shadow:0 0 80px rgba(0,0,0,.95),0 0 25px rgba(74,107,154,.2); }
+.modal.s-curse   { border-color:#7a1a1a;       box-shadow:0 0 80px rgba(0,0,0,.95),0 0 40px rgba(180,30,30,.35); }
+.modal.s-ask     { border-color:#4a4040; }
+.corner { position:absolute; width:18px; height:18px; border-style:solid; border-color:var(–gold); opacity:.45; }
+.corner.tl{top:7px;left:7px;border-width:2px 0 0 2px;} .corner.tr{top:7px;right:7px;border-width:2px 2px 0 0;}
+.corner.bl{bottom:7px;left:7px;border-width:0 0 2px 2px;} .corner.br{bottom:7px;right:7px;border-width:0 2px 2px 0;}
+.m-title { font-family:‘Cinzel Decorative’,serif; color:var(–gold); font-size:.98rem; text-align:center; margin-bottom:6px; text-shadow:0 0 14px rgba(201,168,76,.6); letter-spacing:2px; }
+.divider { height:1px; background:linear-gradient(to right,transparent,var(–gold),transparent); opacity:.4; margin:8px 0; }
+
+/* Phase ask */
+#phase-ask{display:none;} #phase-ask.active{display:block;}
+.ask-info { text-align:center; margin:10px 0 14px; font-family:‘Cinzel’,serif; font-size:.82rem; color:#c0a070; line-height:1.8; }
+.ask-info strong { color:var(–gold); font-size:1rem; }
+.roll-input-row { display:flex; align-items:center; justify-content:center; gap:10px; margin:10px 0; }
+.roll-input-row input { width:72px; font-size:1.4rem; font-family:‘Cinzel’,serif; text-align:center; padding:6px; background:rgba(0,0,0,.55); border:2px solid rgba(201,168,76,.4); color:var(–gold); border-radius:3px; outline:none; }
+.roll-input-row input:focus { border-color:var(–gold); }
+.roll-input-row input::placeholder { color:#604030; font-size:.9rem; }
+.btn-confirm { display:block; margin:12px auto 0; padding:9px 34px; background:rgba(201,168,76,.12); border:1px solid var(–gold); color:var(–gold); font-family:‘Cinzel’,serif; font-size:.78rem; letter-spacing:3px; cursor:pointer; border-radius:2px; transition:all .2s; }
+.btn-confirm:hover { background:rgba(201,168,76,.22); box-shadow:0 0 10px rgba(201,168,76,.3); }
+
+/* Phase result */
+#phase-result{display:none;} #phase-result.active{display:block;}
+.roll-display { text-align:center; margin:12px 0 8px; }
+.roll-big { font-family:‘Cinzel’,serif; font-size:2.8rem; font-weight:900; color:var(–gold); text-shadow:0 0 18px rgba(201,168,76,.85); display:block; line-height:1; }
+.roll-detail { font-family:‘Cinzel’,serif; font-size:.74rem; color:#a08060; margin-top:4px; }
+.result-banner { text-align:center; font-family:‘Cinzel Decorative’,serif; font-size:1.15rem; font-weight:700; padding:7px; border-radius:2px; margin:8px 0; letter-spacing:3px; }
+.result-banner.pass { color:#f0c94a; background:rgba(201,168,76,.09); border:1px solid rgba(201,168,76,.28); text-shadow:0 0 12px rgba(240,201,74,.7); }
+.result-banner.fail { color:#c04040; background:rgba(139,26,26,.12); border:1px solid rgba(139,26,26,.28); }
+
+.item-card { margin-top:12px; padding:13px 14px; background:rgba(0,0,0,.38); border-radius:3px; border-left:3px solid; }
+.item-card.good    { border-left-color:var(–gold); } .item-card.bad { border-left-color:#9a4aba; } .item-card.neutral { border-left-color:#4a6b9a; }
+.item-rarity { font-family:‘Cinzel’,serif; font-size:.58rem; letter-spacing:3px; color:#a08060; margin-bottom:4px; }
+.item-name   { font-family:‘Cinzel’,serif; font-size:.95rem; font-weight:700; margin-bottom:4px; }
+.item-card.good .item-name { color:var(–gold); } .item-card.bad .item-name { color:#c060e0; } .item-card.neutral .item-name { color:#6a9adf; }
+.item-name-en { font-family:‘IM Fell English’,serif; font-size:.72rem; font-style:italic; color:#806040; margin-bottom:4px; display:block; }
+.item-desc { font-style:italic; color:var(–parchment); font-size:.84rem; line-height:1.65; opacity:.9; margin-top:5px; }
+.item-link { display:inline-block; margin-top:7px; font-family:‘Cinzel’,serif; font-size:.6rem; letter-spacing:2px; color:#806040; text-decoration:none; border-bottom:1px dotted #604030; }
+.item-link:hover { color:var(–gold); }
+
+.curse-card { margin-top:12px; padding:14px 15px; background:linear-gradient(135deg,rgba(100,10,10,.3),rgba(60,5,5,.4)); border-radius:3px; border-left:3px solid #8b2a2a; border-top:1px solid rgba(180,40,40,.2); }
+.curse-header { font-family:‘Cinzel’,serif; font-size:.6rem; letter-spacing:3px; color:#8b2a2a; margin-bottom:5px; }
+.curse-name   { font-family:‘Cinzel’,serif; font-size:1rem; font-weight:700; color:#d04040; margin-bottom:5px; text-shadow:0 0 8px rgba(200,40,40,.4); }
+.curse-impact { display:inline-block; margin-bottom:7px; padding:2px 8px; font-family:‘Cinzel’,serif; font-size:.6rem; letter-spacing:2px; border-radius:2px; }
+.curse-impact.leve     { background:rgba(180,100,20,.2); border:1px solid rgba(180,100,20,.3); color:#c09040; }
+.curse-impact.moderado { background:rgba(180,30,30,.2);  border:1px solid rgba(180,30,30,.3);  color:#d05050; }
+.curse-impact.severo   { background:rgba(120,0,120,.2);  border:1px solid rgba(120,0,120,.35); color:#c060e0; }
+.curse-impact.letal    { background:rgba(80,0,0,.35);    border:1px solid rgba(180,0,0,.5);    color:#ff4444; text-shadow:0 0 6px rgba(255,50,50,.6); }
+.curse-desc   { font-style:italic; color:#e0b0b0; font-size:.84rem; line-height:1.65; opacity:.9; }
+.curse-effect { margin-top:8px; padding:6px 9px; background:rgba(0,0,0,.35); border-radius:2px; font-family:‘Cinzel’,serif; font-size:.7rem; color:#c08080; line-height:1.5; }
+
+.btn-close { display:block; margin:16px auto 0; padding:7px 28px; background:transparent; border:1px solid var(–gold); color:var(–gold); font-family:‘Cinzel’,serif; font-size:.72rem; letter-spacing:3px; cursor:pointer; border-radius:2px; transition:all .2s; }
+.btn-close:hover { background:rgba(201,168,76,.15); }
+.btn-close.red-btn { border-color:#8b2a2a; color:#c04040; }
+.btn-close.red-btn:hover { background:rgba(139,26,26,.2); }
+
+/* Reset confirm modal */
+.reset-overlay { position:fixed; inset:0; background:rgba(0,0,0,.9); display:flex; align-items:center; justify-content:center; z-index:2000; opacity:0; pointer-events:none; transition:opacity .25s; backdrop-filter:blur(6px); }
+.reset-overlay.open { opacity:1; pointer-events:all; }
+.reset-box { width:min(380px,90vw); background:linear-gradient(135deg,#1c0505,#0d0303); border:2px solid #8b1a1a; border-radius:4px; padding:28px 26px 22px; text-align:center; transform:scale(.85); transition:transform .28s cubic-bezier(.34,1.56,.64,1); box-shadow:0 0 60px rgba(180,20,20,.4); }
+.reset-overlay.open .reset-box { transform:scale(1); }
+.reset-box h3 { font-family:‘Cinzel Decorative’,serif; color:#d04040; font-size:1rem; margin-bottom:10px; text-shadow:0 0 10px rgba(200,40,40,.5); letter-spacing:2px; }
+.reset-box p  { font-family:‘IM Fell English’,serif; font-style:italic; color:#c09090; font-size:.88rem; line-height:1.6; margin-bottom:18px; }
+.reset-actions { display:flex; gap:12px; justify-content:center; }
+.btn-reset-yes { padding:8px 22px; background:rgba(139,26,26,.3); border:1px solid #8b1a1a; color:#e05050; font-family:‘Cinzel’,serif; font-size:.72rem; letter-spacing:2px; cursor:pointer; border-radius:2px; transition:all .2s; }
+.btn-reset-yes:hover { background:rgba(180,30,30,.5); }
+.btn-reset-no  { padding:8px 22px; background:rgba(0,0,0,.4); border:1px solid rgba(201,168,76,.3); color:#a08060; font-family:‘Cinzel’,serif; font-size:.72rem; letter-spacing:2px; cursor:pointer; border-radius:2px; transition:all .2s; }
+.btn-reset-no:hover { background:rgba(201,168,76,.1); }
+
+.fog { position:fixed; bottom:0; left:0; right:0; height:120px; background:linear-gradient(to top,rgba(0,0,0,.75),transparent); pointer-events:none; z-index:1; }
+</style>
+
+</head>
+<body>
+
+<div class="header">
+  <div class="torch"><div class="flame"></div><div class="handle"></div></div>
+  <div>
+    <h1 id="mainTitle">El Paredón del Calabozo</h1>
+    <div class="subtitle" id="mainSubtitle">⚔ TIRADAS DE SABIDURÍA — D&D 5e ⚔</div>
+  </div>
+  <div class="torch"><div class="flame"></div><div class="handle"></div></div>
+</div>
+
+<div class="topbar">
+  <label id="wisLabel">BONO DE SABIDURÍA: <input type="number" id="wisBonus" value="0" min="-5" max="10"></label>
+  <button class="lang-btn active" id="btnES" onclick="setLang('es')">🇪🇸 ESPAÑOL</button>
+  <button class="lang-btn" id="btnEN" onclick="setLang('en')">🇬🇧 ENGLISH</button>
+  <button class="reset-btn" onclick="openReset()">⟳ <span id="resetLabel">REINICIAR</span></button>
+</div>
+
+<div class="legend" id="legend">
+  <span><span style="color:var(--gold)">✦</span> Objeto descubierto</span>
+  <span><span style="color:#b060d0">☠</span> Objeto maldito</span>
+  <span><span style="color:#6a9adf">◈</span> Objeto neutro</span>
+  <span><span style="color:#8b2a2a">✕</span> Maldición activada</span>
+</div>
+
+<div class="stats" id="statsBar">Ladrillos: 0/56 &nbsp;|&nbsp; ✦ Éxitos: 0 &nbsp;|&nbsp; ☠ Maldiciones: 0</div>
+
+<div class="wall-wrap"><div class="wall" id="wall"></div></div>
+
+<div class="fog"></div>
+
+<!-- Main modal -->
+
+<div class="overlay" id="overlay">
+  <div class="modal s-ask" id="modal">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div class="m-title" id="mTitle"></div>
+    <div class="divider"></div>
+    <div id="phase-ask">
+      <div class="ask-info" id="askInfo"></div>
+      <div class="roll-input-row">
+        <span id="rollLabel" style="font-family:Cinzel;font-size:.78rem;color:#a08060">TU d20:</span>
+        <input type="number" id="rollInput" min="1" max="20" placeholder="1–20">
+      </div>
+      <button class="btn-confirm" id="btnConfirm" onclick="confirmRoll()">⚔ Confirmar Tirada ⚔</button>
+    </div>
+    <div id="phase-result">
+      <div class="roll-display">
+        <span class="roll-big" id="rollBig"></span>
+        <div class="roll-detail" id="rollDetail"></div>
+      </div>
+      <div id="resBanner"></div>
+      <div id="itemArea"></div>
+      <button class="btn-close" id="btnClose" onclick="closeModal()"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Reset confirm modal -->
+
+<div class="reset-overlay" id="resetOverlay">
+  <div class="reset-box">
+    <h3 id="resetTitle">☠ ¿Reiniciar el Paredón?</h3>
+    <p id="resetBody">Todos los ladrillos descubiertos, objetos encontrados y maldiciones activadas serán olvidados por la eternidad. Esta acción no puede deshacerse.</p>
+    <div class="reset-actions">
+      <button class="btn-reset-yes" onclick="doReset()" id="resetYes">Sí, reiniciar</button>
+      <button class="btn-reset-no"  onclick="closeReset()" id="resetNo">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// LANGUAGE SYSTEM
+// ══════════════════════════════════════════════════════
+let LANG = localStorage.getItem('dungeon_lang') || 'es';
+
+const UI = {
+  es: {
+    title:'El Paredón del Calabozo', subtitle:'⚔ TIRADAS DE SABIDURÍA — D&D 5e ⚔',
+    wisLabel:'BONO DE SABIDURÍA:', resetLabel:'REINICIAR',
+    legend:['✦ Objeto descubierto','☠ Objeto maldito','◈ Objeto neutro','✕ Maldición activada'],
+    stats:(r,s,c)=>`Ladrillos: ${r}/56 \u00a0|\u00a0 ✦ Éxitos: ${s} \u00a0|\u00a0 ☠ Maldiciones: ${c}`,
+    modalTitle:'⚔ Tirada de Sabiduría ⚔',
+    askIntro:(dc,name,bonStr)=>`Inspeccionas el ladrillo…<br><strong>CD ${dc}</strong> — Sabiduría (Percepción)<br><span style="font-size:.72rem;color:#806040;font-style:italic">${name}</span><br><br><span style="font-size:.74rem;color:#a08060">Lanza tu <strong style="color:var(--gold)">d20</strong>${bonStr} e introduce el número del dado:</span>`,
+    rollLabel:'TU d20:', confirmBtn:'⚔ Confirmar Tirada ⚔',
+    bonusStr:(b)=>b===0?'':(b>0?` + ${b} (SAB)`:` ${b} (SAB)`),
+    nat20:'¡VEINTE NATURAL!', nat1:'¡UNO NATURAL!',
+    result:(t,dc)=>`Resultado: <strong style="color:var(--gold)">${t}</strong> vs CD <strong>${dc}</strong>`,
+    pass:'✦ SUPERADO ✦', fail:'✕ FALLIDO ✕',
+    itemHeader:'✦ OBJETO DESCUBIERTO',
+    itemHeaderBad:'☠ OBJETO MALDITO DESCUBIERTO',
+    itemHeaderNeutral:'◈ OBJETO NEUTRO DESCUBIERTO',
+    wikiLink:'Ver en dnd5e.wikidot.com ↗',
+    curseHeader:'☠ MALDICIÓN ACTIVADA',
+    sevLabel:{leve:'⚠ LEVE',moderado:'⚠ MODERADO',severo:'☠ SEVERO',letal:'💀 LETAL'},
+    closeBtn:'⚔ Cerrar ⚔', curseBtn:'☠ Aceptar la Maldición ☠',
+    badge:(dc,ok)=>`CD ${dc} ${ok?'✦':'✕'}`,
+    resetTitle:'☠ ¿Reiniciar el Paredón?',
+    resetBody:'Todos los ladrillos descubiertos, objetos encontrados y maldiciones activadas serán olvidados por la eternidad. Esta acción no puede deshacerse.',
+    resetYes:'Sí, reiniciar', resetNo:'Cancelar',
+    nameKey:'name_es', descKey:'desc_es', effectKey:'effect_es',
+    curseName:'curse_name_es', curseDesc:'curse_desc_es', curseEffect:'curse_effect_es',
+  },
+  en: {
+    title:'The Dungeon Wall', subtitle:'⚔ WISDOM CHECKS — D&D 5e ⚔',
+    wisLabel:'WISDOM BONUS:', resetLabel:'RESET',
+    legend:['✦ Item discovered','☠ Cursed item','◈ Neutral item','✕ Curse triggered'],
+    stats:(r,s,c)=>`Bricks: ${r}/56 \u00a0|\u00a0 ✦ Successes: ${s} \u00a0|\u00a0 ☠ Curses: ${c}`,
+    modalTitle:'⚔ Wisdom Check ⚔',
+    askIntro:(dc,name,bonStr)=>`You inspect the brick…<br><strong>DC ${dc}</strong> — Wisdom (Perception)<br><span style="font-size:.72rem;color:#806040;font-style:italic">${name}</span><br><br><span style="font-size:.74rem;color:#a08060">Roll your <strong style="color:var(--gold)">d20</strong>${bonStr} and enter the result:</span>`,
+    rollLabel:'YOUR d20:', confirmBtn:'⚔ Confirm Roll ⚔',
+    bonusStr:(b)=>b===0?'':(b>0?` + ${b} (WIS)`:` ${b} (WIS)`),
+    nat20:'NATURAL TWENTY!', nat1:'NATURAL ONE!',
+    result:(t,dc)=>`Result: <strong style="color:var(--gold)">${t}</strong> vs DC <strong>${dc}</strong>`,
+    pass:'✦ SUCCESS ✦', fail:'✕ FAILED ✕',
+    itemHeader:'✦ ITEM DISCOVERED',
+    itemHeaderBad:'☠ CURSED ITEM DISCOVERED',
+    itemHeaderNeutral:'◈ NEUTRAL ITEM DISCOVERED',
+    wikiLink:'View on dnd5e.wikidot.com ↗',
+    curseHeader:'☠ CURSE TRIGGERED',
+    sevLabel:{leve:'⚠ MINOR',moderado:'⚠ MODERATE',severo:'☠ SEVERE',letal:'💀 LETHAL'},
+    closeBtn:'⚔ Close ⚔', curseBtn:'☠ Accept the Curse ☠',
+    badge:(dc,ok)=>`DC ${dc} ${ok?'✦':'✕'}`,
+    resetTitle:'☠ Reset the Dungeon Wall?',
+    resetBody:'All discovered bricks, found items, and triggered curses will be forgotten for eternity. This action cannot be undone.',
+    resetYes:'Yes, reset', resetNo:'Cancel',
+    nameKey:'name_en', descKey:'desc_en', effectKey:'effect_en',
+    curseName:'curse_name_en', curseDesc:'curse_desc_en', curseEffect:'curse_effect_en',
+  }
+};
+
+// ══════════════════════════════════════════════════════
+// 56 ITEMS — bilingual (ES + EN)
+// ══════════════════════════════════════════════════════
+const ITEMS = [
+  // CD/DC 8
+  {dc:8, quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:boots-of-elvenkind',
+   name_es:'Botas del Tipo Elfo',              name_en:'Boots of Elvenkind',
+   rarity_es:'Poco común',                     rarity_en:'Uncommon',
+   desc_es:'Mientras llevas estas botas, tus pasos no producen ningún sonido sin importar la superficie. Además tienes ventaja en las tiradas de Destreza (Sigilo) que dependan de moverse en silencio.',
+   desc_en:'While you wear these boots, your steps make no sound regardless of the surface. You also have advantage on Dexterity (Stealth) checks that rely on moving silently.'},
+  {dc:8, quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:cloak-of-protection',
+   name_es:'Capa de Protección',               name_en:'Cloak of Protection',
+   rarity_es:'Poco común (sintonía)',           rarity_en:'Uncommon (attune)',
+   desc_es:'Ganas un bonificador de +1 a la CA y a las tiradas de salvación mientras llevas esta capa.',
+   desc_en:'You gain a +1 bonus to AC and saving throws while you wear this cloak.'},
+  {dc:8, quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:goggles-of-night',
+   name_es:'Gafas de la Noche',                name_en:'Goggles of Night',
+   rarity_es:'Poco común',                     rarity_en:'Uncommon',
+   desc_es:'Mientras llevas estas lentes oscuras, tienes visión en la oscuridad hasta 18 metros. Si ya la tenías, la distancia aumenta 18 metros más.',
+   desc_en:'While wearing these dark lenses, you have darkvision out to a range of 60 feet. If you already have darkvision, wearing the goggles increases its range by 60 feet.'},
+  {dc:8, quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:rope-of-climbing',
+   name_es:'Cuerda de Escalada',               name_en:'Rope of Climbing',
+   rarity_es:'Poco común',                     rarity_en:'Uncommon',
+   desc_es:'Esta cuerda de seda de 18 metros soporta hasta 1350 kg. Si sostienes un extremo y pronuncias su palabra de mando, la cuerda se anima y puede trepar, anudarse o sujetar criaturas.',
+   desc_en:'This 60-foot length of silk rope can hold up to 3,000 pounds. If you hold one end and speak its command word, it animates and can climb, knot itself, or hold a creature.'},
+  {dc:8, quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:bag-of-holding',
+   name_es:'Bolsa de Contención',              name_en:'Bag of Holding',
+   rarity_es:'Poco común',                     rarity_en:'Uncommon',
+   desc_es:'Esta bolsa tiene un espacio interior considerablemente mayor que sus dimensiones externas — unos 60 cm de diámetro en la boca y 1,2 m de profundidad. Puede contener hasta 225 kg sin superar 1,8 m³.',
+   desc_en:'This bag has an interior space larger than its outside dimensions — roughly 2 feet in diameter at the mouth and 4 feet deep. It can hold up to 500 pounds without exceeding 64 cubic feet.'},
+  {dc:8, quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:brooch-of-shielding',
+   name_es:'Broche de Escudo',                 name_en:'Brooch of Shielding',
+   rarity_es:'Poco común (sintonía)',           rarity_en:'Uncommon (attune)',
+   desc_es:'Mientras llevas este broche, tienes resistencia al daño de fuerza e inmunidad al daño del hechizo dardo mágico.',
+   desc_en:'While wearing this brooch, you have resistance to force damage and immunity to damage from the magic missile spell.'},
+  {dc:8, quality:'neutral',url:'https://dnd5e.wikidot.com/wondrous-items:decanter-of-endless-water',
+   name_es:'Decantador de Agua Sin Fin',       name_en:'Decanter of Endless Water',
+   rarity_es:'Poco común',                     rarity_en:'Uncommon',
+   desc_es:'Este frasco taponado chapotea al agitarse. Con una acción puedes pronunciar una de tres palabras de mando para dispensar 4 litros, 20 litros, o un chorro de agua de 9 metros de largo.',
+   desc_en:'This stoppered flask sloshes when shaken. Using an action and a command word, you can dispense 1 gallon, 5 gallons, or a 30-foot stream of water.'},
+  // DC 9
+  {dc:9, quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:dust-of-disappearance',
+   name_es:'Polvo de Desaparición',            name_en:'Dust of Disappearance',
+   rarity_es:'Poco común',                     rarity_en:'Uncommon',
+   desc_es:'Cuando usas una acción para lanzar este polvo al aire, tú y cada criatura u objeto en un radio de 3 metros se volvéis invisibles durante 2d4 minutos. Atacar o lanzar un hechizo termina la invisibilidad.',
+   desc_en:'When you use an action to throw this powder into the air, you and each creature and object within 10 feet become invisible for 2d4 minutes. Attacking or casting a spell ends the invisibility.'},
+  {dc:9, quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:broom-of-flying',
+   name_es:'Escoba Voladora',                  name_en:'Broom of Flying',
+   rarity_es:'Poco común',                     rarity_en:'Uncommon',
+   desc_es:'Esta escoba de madera funciona como una escoba mundana hasta que te sientas a horcajadas sobre ella y pronuncies su palabra de mando. Entonces flota bajo ti y puedes volar a 15 metros de velocidad.',
+   desc_en:'This wooden broom functions like a mundane broom until you stand astride it and speak its command word. It then hovers beneath you and can be ridden in the air at a flying speed of 50 feet.'},
+  {dc:9, quality:'neutral',url:'https://dnd5e.wikidot.com/wondrous-items:eversmoking-bottle',
+   name_es:'Botella Siempre Humeante',         name_en:'Eversmoking Bottle',
+   rarity_es:'Poco común',                     rarity_en:'Uncommon',
+   desc_es:'El humo se filtra por la boca de esta botella. Retirar el tapón llena el área circundante de 18 metros con niebla espesa que oscurece completamente la visión. Un viento de 16 km/h o más la dispersa en 1 minuto.',
+   desc_en:'Smoke leaks from this bottle. Removing the stopper fills the surrounding 60-foot area with thick fog that is heavily obscured. Wind of 10+ mph disperses it in 1 minute.'},
+  // DC 10
+  {dc:10,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:bracers-of-archery',
+   name_es:'Brazales de Arquería',             name_en:'Bracers of Archery',
+   rarity_es:'Poco común (sintonía)',           rarity_en:'Uncommon (attune)',
+   desc_es:'Mientras llevas estos brazales, tienes competencia con el arco largo y el arco corto, y obtienes un bonificador de +2 a las tiradas de daño de ataques a distancia con dichas armas.',
+   desc_en:'While wearing these bracers, you have proficiency with the longbow and shortbow, and you gain a +2 bonus to damage rolls on ranged attacks made with such weapons.'},
+  {dc:10,quality:'neutral',url:'https://dnd5e.wikidot.com/wondrous-items:circlet-of-blasting',
+   name_es:'Diadema de Estallido',             name_en:'Circlet of Blasting',
+   rarity_es:'Poco común',                     rarity_en:'Uncommon',
+   desc_es:'Mientras llevas esta diadema, puedes usar una acción para lanzar el hechizo rayo ardiente (+5 de bonificador de ataque). Esta propiedad no se puede usar de nuevo hasta el siguiente amanecer.',
+   desc_en:'While wearing this circlet, you can use an action to cast scorching ray (attack bonus +5). This property can\'t be used again until the next dawn.'},
+  {dc:10,quality:'neutral',url:'https://dnd5e.wikidot.com/wondrous-items:hat-of-disguise',
+   name_es:'Sombrero del Disfraz',             name_en:'Hat of Disguise',
+   rarity_es:'Poco común (sintonía)',           rarity_en:'Uncommon (attune)',
+   desc_es:'Mientras llevas este sombrero, puedes usar una acción para lanzar el hechizo disfrazarse a voluntad. El hechizo termina si te quitas el sombrero.',
+   desc_en:'While wearing this hat, you can use an action to cast disguise self from it at will. The spell ends if the hat is removed.'},
+  {dc:10,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:periapt-of-wound-closure',
+   name_es:'Periaptos de Cierre de Heridas',  name_en:'Periapt of Wound Closure',
+   rarity_es:'Poco común (sintonía)',           rarity_en:'Uncommon (attune)',
+   desc_es:'Mientras llevas este colgante, te estabilizas automáticamente cuando estás agonizando al inicio de tu turno. Además, cuando lanzas un Dado de Golpe para recuperar puntos de golpe, duplicas el resultado.',
+   desc_en:'While you wear this pendant, you stabilize whenever you are dying at the start of your turn. In addition, whenever you roll a Hit Die to regain hit points, double the number of hit points it restores.'},
+  // DC 11
+  {dc:11,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:cloak-of-elvenkind',
+   name_es:'Capa del Tipo Elfo',               name_en:'Cloak of Elvenkind',
+   rarity_es:'Poco común (sintonía)',           rarity_en:'Uncommon (attune)',
+   desc_es:'Mientras llevas esta capa con la capucha puesta, las tiradas de Sabiduría (Percepción) para verte tienen desventaja, y tú tienes ventaja en las tiradas de Destreza (Sigilo) para esconderte.',
+   desc_en:'While you wear this cloak with its hood up, Wisdom (Perception) checks made to see you have disadvantage, and you have advantage on Dexterity (Stealth) checks made to hide.'},
+  {dc:11,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:eyes-of-the-eagle',
+   name_es:'Ojos del Águila',                  name_en:'Eyes of the Eagle',
+   rarity_es:'Poco común (sintonía)',           rarity_en:'Uncommon (attune)',
+   desc_es:'Estas lentes de cristal encajan sobre los ojos. Mientras las llevas, tienes ventaja en las tiradas de Sabiduría (Percepción) que dependan de la vista. En condiciones de visibilidad clara puedes percibir detalles a grandes distancias.',
+   desc_en:'These crystal lenses fit over the eyes. While wearing them, you have advantage on Wisdom (Perception) checks that rely on sight. In clear visibility, you can make out details of even extremely distant creatures and objects.'},
+  {dc:11,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:necklace-of-adaptation',
+   name_es:'Collar de Adaptación',             name_en:'Necklace of Adaptation',
+   rarity_es:'Poco común (sintonía)',           rarity_en:'Uncommon (attune)',
+   desc_es:'Mientras llevas este collar, puedes respirar con normalidad en cualquier entorno, y tienes ventaja en las tiradas de salvación contra gases y vapores nocivos como los de nube asesina o hedor nauseabundo.',
+   desc_en:'While wearing this necklace, you can breathe normally in any environment, and you have advantage on saving throws made against harmful gases and vapors.'},
+  // DC 12
+  {dc:12,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:cape-of-the-mountebank',
+   name_es:'Capa del Charlatán',               name_en:'Cape of the Mountebank',
+   rarity_es:'Raro',                           rarity_en:'Rare',
+   desc_es:'Esta capa huele levemente a azufre. Mientras la llevas, puedes usarla para lanzar el hechizo puerta dimensional como acción. Al desaparecer dejas una nube de humo. Esta propiedad no se puede usar de nuevo hasta el amanecer.',
+   desc_en:'This cape smells faintly of brimstone. While wearing it, you can use an action to cast dimension door. When you disappear, you leave behind a cloud of smoke. This property can\'t be used again until the next dawn.'},
+  {dc:12,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:bracers-of-defense',
+   name_es:'Brazales de Defensa',              name_en:'Bracers of Defense',
+   rarity_es:'Raro (sintonía)',                rarity_en:'Rare (attune)',
+   desc_es:'Mientras llevas estos brazales, obtienes un bonificador de +2 a la CA si no llevas armadura y no usas escudo.',
+   desc_en:'While wearing these bracers, you gain a +2 bonus to AC if you are wearing no armor and using no shield.'},
+  {dc:12,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:headband-of-intellect',
+   name_es:'Cinta de Intelecto',               name_en:'Headband of Intellect',
+   rarity_es:'Poco común (sintonía)',           rarity_en:'Uncommon (attune)',
+   desc_es:'Tu puntuación de Inteligencia es 19 mientras llevas esta cinta. No tiene efecto si tu Inteligencia ya es 19 o mayor.',
+   desc_en:'Your Intelligence score is 19 while you wear this headband. It has no effect on you if your Intelligence is already 19 or higher.'},
+  {dc:12,quality:'neutral',url:'https://dnd5e.wikidot.com/wondrous-items:medallion-of-thoughts',
+   name_es:'Medallón de los Pensamientos',     name_en:'Medallion of Thoughts',
+   rarity_es:'Poco común (sintonía)',           rarity_en:'Uncommon (attune)',
+   desc_es:'Este medallón tiene 3 cargas. Mientras lo llevas puedes gastar 1 carga para lanzar detectar pensamientos (CD 13). Recupera 1d3 cargas cada amanecer.',
+   desc_en:'This medallion has 3 charges. While wearing it you can expend 1 charge to cast detect thoughts (save DC 13). It regains 1d3 charges daily at dawn.'},
+  {dc:12,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:cloak-of-the-manta-ray',
+   name_es:'Capa de la Manta',                 name_en:'Cloak of the Manta Ray',
+   rarity_es:'Poco común',                     rarity_en:'Uncommon',
+   desc_es:'Mientras llevas esta capa con la capucha puesta, puedes respirar bajo el agua y tienes velocidad de natación de 18 metros. Subir o bajar la capucha requiere una acción.',
+   desc_en:'While wearing this cloak with its hood up, you can breathe underwater and you have a swimming speed of 60 feet. Pulling the hood up or down requires an action.'},
+  {dc:12,quality:'bad',    url:'https://dnd5e.wikidot.com/wondrous-items:dust-of-sneezing-and-choking',
+   name_es:'Polvo de Estornudo y Asfixia',     name_en:'Dust of Sneezing and Choking',
+   rarity_es:'Poco común',                     rarity_en:'Uncommon',
+   desc_es:'Una criatura que inhale este polvo debe superar una tirada de salvación de Constitución CD 15 o quedará incapacitada y sufrirá asfixia durante el siguiente minuto.',
+   desc_en:'A creature that inhales this powder must succeed on a DC 15 Constitution saving throw or become incapacitated and suffocating for the next minute.'},
+  // DC 13
+  {dc:13,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:boots-of-levitation',
+   name_es:'Botas de Levitación',              name_en:'Boots of Levitation',
+   rarity_es:'Raro (sintonía)',                rarity_en:'Rare (attune)',
+   desc_es:'Mientras llevas estas botas, puedes usar una acción para lanzar el hechizo levitar sobre ti mismo a voluntad.',
+   desc_en:'While you wear these boots, you can use an action to cast the levitate spell on yourself at will.'},
+  {dc:13,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:cloak-of-displacement',
+   name_es:'Capa de Desplazamiento',           name_en:'Cloak of Displacement',
+   rarity_es:'Raro (sintonía)',                rarity_en:'Rare (attune)',
+   desc_es:'Mientras llevas esta capa, proyecta una ilusión que te hace parecer estar en un lugar cercano a tu ubicación real, haciendo que cualquier criatura tenga desventaja en las tiradas de ataque contra ti.',
+   desc_en:'While you wear this cloak, it projects an illusion making you appear to be standing in a place near your actual location, causing any creature to have disadvantage on attack rolls against you.'},
+  {dc:13,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:gauntlets-of-ogre-power',
+   name_es:'Guanteletes del Poder del Ogro',  name_en:'Gauntlets of Ogre Power',
+   rarity_es:'Poco común (sintonía)',           rarity_en:'Uncommon (attune)',
+   desc_es:'Tu puntuación de Fuerza es 19 mientras llevas estos guanteletes. No tienen efecto si tu Fuerza ya es 19 o mayor.',
+   desc_en:'Your Strength score is 19 while you wear these gauntlets. They have no effect on you if your Strength is already 19 or higher.'},
+  {dc:13,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:lantern-of-revealing',
+   name_es:'Linterna de Revelación',           name_en:'Lantern of Revealing',
+   rarity_es:'Poco común',                     rarity_en:'Uncommon',
+   desc_es:'Mientras está encendida, esta linterna emite luz brillante en un radio de 9 metros y luz tenue 9 metros más. Las criaturas y objetos invisibles son visibles siempre que estén en la luz brillante de la linterna.',
+   desc_en:'While lit, this hooded lantern sheds bright light in a 30-foot radius and dim light for an additional 30 feet. Invisible creatures and objects are visible as long as they are in the lantern\'s bright light.'},
+  // DC 14
+  {dc:14,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:boots-of-speed',
+   name_es:'Botas de Velocidad',               name_en:'Boots of Speed',
+   rarity_es:'Raro (sintonía)',                rarity_en:'Rare (attune)',
+   desc_es:'Mientras llevas estas botas, puedes usar una acción adicional y chasquear los tacones. Las botas duplican tu velocidad y cualquier criatura que realice un ataque de oportunidad contra ti tiene desventaja.',
+   desc_en:'While you wear these boots, you can use a bonus action and click the boots\' heels. The boots double your walking speed, and any creature that makes an opportunity attack against you has disadvantage.'},
+  {dc:14,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:amulet-of-health',
+   name_es:'Amuleto de Salud',                 name_en:'Amulet of Health',
+   rarity_es:'Raro (sintonía)',                rarity_en:'Rare (attune)',
+   desc_es:'Tu puntuación de Constitución es 19 mientras llevas este amuleto. No tiene efecto si tu Constitución ya es 19 o mayor.',
+   desc_en:'Your Constitution score is 19 while you wear this amulet. It has no effect on you if your Constitution is already 19 or higher.'},
+  {dc:14,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:gem-of-brightness',
+   name_es:'Gema de Brillo',                   name_en:'Gem of Brightness',
+   rarity_es:'Poco común',                     rarity_en:'Uncommon',
+   desc_es:'Este prisma tiene 50 cargas. Mientras lo sostienes puedes usar una acción para emitir un destello tenue, un rayo cegador (CD 15 CON) o una explosión de luz brillante que ciega a las criaturas en 9 metros.',
+   desc_en:'This prism has 50 charges. While holding it, you can use an action to cause one of three effects: a dim flash, a blinding ray (DC 15 Con save), or a burst of intense light that blinds creatures within 30 feet.'},
+  {dc:14,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:cloak-of-the-bat',
+   name_es:'Capa del Murciélago',              name_en:'Cloak of the Bat',
+   rarity_es:'Raro (sintonía)',                rarity_en:'Rare (attune)',
+   desc_es:'Mientras llevas esta capa, tienes ventaja en las tiradas de Destreza (Sigilo). Con poca luz o en la oscuridad, puedes volar a 12 metros. También puedes polimorfarte en murciélago en esas condiciones.',
+   desc_en:'While wearing this cloak, you have advantage on Dexterity (Stealth) checks. In dim light or darkness, you can fly at a speed of 40 feet. You can also polymorph into a bat while in dim light or darkness.'},
+  {dc:14,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:amulet-of-proof-against-detection-and-location',
+   name_es:'Amuleto contra la Detección',      name_en:'Amulet of Proof Against Detection',
+   rarity_es:'Poco común (sintonía)',           rarity_en:'Uncommon (attune)',
+   desc_es:'Mientras llevas este amuleto, estás oculto de la magia de adivinación. No puedes ser objetivo de dicha magia ni ser percibido a través de sensores de escrutinio mágico.',
+   desc_en:'While wearing this amulet, you are hidden from divination magic. You can\'t be targeted by such magic or perceived through magical scrying sensors.'},
+  {dc:14,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:belt-of-dwarvenkind',
+   name_es:'Cinturón del Tipo Enano',          name_en:'Belt of Dwarvenkind',
+   rarity_es:'Raro (sintonía)',                rarity_en:'Rare (attune)',
+   desc_es:'Tu Constitución aumenta en 2 (máx. 20). Ganas visión en la oscuridad 18 m, ventaja en salvaciones de veneno, resistencia al daño por veneno y puedes hablar, leer y escribir en enano.',
+   desc_en:'Your Constitution increases by 2 (max 20). You gain darkvision 60 ft., advantage on poison saves, resistance to poison damage, and you can speak, read, and write Dwarvish.'},
+  // DC 15
+  {dc:15,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:cloak-of-arachnida',
+   name_es:'Capa de la Arácnida',              name_en:'Cloak of Arachnida',
+   rarity_es:'Muy raro (sintonía)',             rarity_en:'Very Rare (attune)',
+   desc_es:'Mientras la llevas, ganas resistencia al veneno, velocidad de escalada igual a la de caminar, capacidad de moverte por paredes y techos, inmunidad a quedar atrapado en telarañas, y puedes lanzar telaraña una vez por amanecer.',
+   desc_en:'While wearing it, you gain resistance to poison damage, a climbing speed equal to your walking speed, the ability to move along walls and ceilings, immunity to being caught in webs, and can cast the web spell once per dawn.'},
+  {dc:15,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:pearl-of-power',
+   name_es:'Perla de Poder',                   name_en:'Pearl of Power',
+   rarity_es:'Poco común (sintonía)',           rarity_en:'Uncommon (attune)',
+   desc_es:'Mientras esta perla está en tu persona, puedes usar una acción para pronunciar su palabra de mando y recuperar un espacio de hechizo gastado de hasta nivel 3. No se puede usar de nuevo hasta el siguiente amanecer.',
+   desc_en:'While this pearl is on your person, you can use an action to speak its command word and regain one expended spell slot of up to 3rd level. Once used, the pearl can\'t be used again until the next dawn.'},
+  {dc:15,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:gem-of-seeing',
+   name_es:'Gema de la Visión',                name_en:'Gem of Seeing',
+   rarity_es:'Raro (sintonía)',                rarity_en:'Rare (attune)',
+   desc_es:'Esta gema tiene 3 cargas. Como acción puedes gastar 1 carga para mirar a través de ella. La gema te concede visión verdadera de 36 metros durante 10 minutos. Recupera 1d3 cargas al amanecer.',
+   desc_en:'This gem has 3 charges. As an action, you can speak the gem\'s command word and look through it. The gem casts truesight on you, with a range of 120 feet, for 10 minutes. It regains 1d3 charges daily at dawn.'},
+  {dc:15,quality:'neutral',url:'https://dnd5e.wikidot.com/wondrous-items:pipes-of-haunting',
+   name_es:'Flautas del Embrujo',              name_en:'Pipes of Haunting',
+   rarity_es:'Poco común',                     rarity_en:'Uncommon',
+   desc_es:'Estas flautas tienen 3 cargas. Como acción puedes tocarlas y gastar 1 carga; las criaturas en 9 metros que las oigan deben superar una salvación de Sabiduría CD 13 o quedar asustadas de ti durante 1 minuto.',
+   desc_en:'These pipes have 3 charges. As an action you can play them and expend 1 charge, causing creatures within 30 feet that hear it to make a DC 13 Wisdom save or become frightened of you for 1 minute.'},
+  {dc:15,quality:'neutral',url:'https://dnd5e.wikidot.com/wondrous-items:bead-of-force',
+   name_es:'Cuenta de Fuerza',                 name_en:'Bead of Force',
+   rarity_es:'Raro',                           rarity_en:'Rare',
+   desc_es:'Puedes lanzar esta cuenta hasta 18 metros. Explota al impactar. Cada criatura en 3 metros debe superar una salvación de Destreza CD 15 o recibir 5d4 de daño de fuerza. Luego una esfera de fuerza encierra el área durante 1 minuto.',
+   desc_en:'You can throw this bead up to 60 feet. It explodes on impact. Each creature within 10 feet must succeed on a DC 15 Dexterity save or take 5d4 force damage. A sphere of transparent force then encloses the area for 1 minute.'},
+  {dc:15,quality:'bad',    url:'https://dnd5e.wikidot.com/wondrous-items:bag-of-beans',
+   name_es:'Bolsa de Judías',                  name_en:'Bag of Beans',
+   rarity_es:'Raro',                           rarity_en:'Rare',
+   desc_es:'Esta pesada bolsa de tela contiene 3d4 judías secas. Si vacías su contenido en el suelo explotan en un radio de 3 metros causando 5d4 de daño de fuego (salvación DES CD 15). Cada judía plantada produce un efecto mágico impredecible.',
+   desc_en:'Inside this heavy cloth bag are 3d4 dry beans. If you dump the bag\'s contents on the ground, they explode in a 10-foot radius dealing 5d4 fire damage (DC 15 Dexterity save). Each bean planted can grow into a wildly unpredictable magical effect.'},
+  // DC 16
+  {dc:16,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:helm-of-brilliance',
+   name_es:'Yelmo de Brillantez',              name_en:'Helm of Brilliance',
+   rarity_es:'Muy raro (sintonía)',             rarity_en:'Very Rare (attune)',
+   desc_es:'Este deslumbrante yelmo está engarzado con gemas de varios tipos. Otorga +1 a las tiradas de ataque de hechizo, permite usar cargas para lanzar hechizos de fuego y luz, y hace que los no muertos en su luz brillante tengan desventaja en sus ataques.',
+   desc_en:'This dazzling helm is set with gems of various kinds. It grants a +1 bonus to spell attack rolls, allows casting fire and light spells using gem charges, and causes undead in its bright light to have disadvantage on attack rolls.'},
+  {dc:16,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:helm-of-telepathy',
+   name_es:'Yelmo de Telepatía',               name_en:'Helm of Telepathy',
+   rarity_es:'Poco común (sintonía)',           rarity_en:'Uncommon (attune)',
+   desc_es:'Mientras llevas este yelmo, puedes usar una acción para lanzar detectar pensamientos (CD 13). Mientras te concentras, puedes enviar mensajes telepáticos a la criatura en la que te estás focalizando.',
+   desc_en:'While wearing this helm, you can use an action to cast detect thoughts (save DC 13). While concentrating, you can use a bonus action to send a telepathic message to a creature you are focused on.'},
+  {dc:16,quality:'neutral',url:'https://dnd5e.wikidot.com/wondrous-items:necklace-of-fireballs',
+   name_es:'Collar de Bolas de Fuego',         name_en:'Necklace of Fireballs',
+   rarity_es:'Raro',                           rarity_en:'Rare',
+   desc_es:'Este collar tiene 1d6+3 cuentas colgando. Puedes desprender una cuenta y lanzarla hasta 18 metros. Al llegar al final de su trayectoria, la cuenta detona como una bola de fuego de nivel 3 (CD 15).',
+   desc_en:'This necklace has 1d6+3 beads hanging from it. You can detach a bead and throw it up to 60 feet. When it reaches the end of its trajectory, the bead detonates as a 3rd-level fireball (save DC 15).'},
+  {dc:16,quality:'neutral',url:'https://dnd5e.wikidot.com/wondrous-items:efreeti-bottle',
+   name_es:'Botella del Efreet',               name_en:'Efreeti Bottle',
+   rarity_es:'Muy raro',                       rarity_en:'Very Rare',
+   desc_es:'Al retirar el tapón, emerge una nube de humo y al final de tu turno aparece un efreet. Lanza 1d100: 01–10 te ataca, 11–90 te sirve 1 hora, 91–100 te concede 3 deseos antes de irse.',
+   desc_en:'When you remove the stopper, a cloud of thick smoke flows out. At the end of your turn an efreeti appears. Roll d100: 01–10 it attacks you, 11–90 it serves you for 1 hour, 91–100 it grants 3 wishes.'},
+  {dc:16,quality:'bad',    url:'https://dnd5e.wikidot.com/wondrous-items:mirror-of-life-trapping',
+   name_es:'Espejo de Trampa Vital',           name_en:'Mirror of Life Trapping',
+   rarity_es:'Muy raro',                       rarity_en:'Very Rare',
+   desc_es:'Cuando se activa, cualquier criatura en 9 metros que vea su propio reflejo en este espejo de 1,2 metros debe superar una salvación de Carisma CD 15 o quedar atrapada en una celda extradimensional dentro del espejo.',
+   desc_en:'When activated, any creature within 30 feet that sees its own reflection in this 4-foot-tall mirror must make a DC 15 Charisma saving throw. On a failure, the creature is trapped within the mirror in an extradimensional cell.'},
+  // DC 17
+  {dc:17,quality:'neutral',url:'https://dnd5e.wikidot.com/wondrous-items:amulet-of-the-planes',
+   name_es:'Amuleto de los Planos',            name_en:'Amulet of the Planes',
+   rarity_es:'Muy raro (sintonía)',             rarity_en:'Very Rare (attune)',
+   desc_es:'Mientras llevas este amuleto, puedes usar una acción para nombrar un lugar familiar en otro plano. Haz una prueba de Inteligencia CD 15. En un éxito lanzas desplazamiento planar. En un fallo tú y las criaturas cercanas viajáis a un destino aleatorio.',
+   desc_en:'While wearing this amulet, you can use an action to name a familiar location on another plane. Make a DC 15 Intelligence check. On a success, you cast plane shift. On a failure, you and nearby creatures travel to a random destination.'},
+  {dc:17,quality:'neutral',url:'https://dnd5e.wikidot.com/wondrous-items:portable-hole',
+   name_es:'Agujero Portátil',                 name_en:'Portable Hole',
+   rarity_es:'Raro',                           rarity_en:'Rare',
+   desc_es:'Esta tela negra se despliega en una lámina circular de 1,8 metros de diámetro. Al colocarla sobre una superficie sólida crea un agujero extradimensional de 3 metros de profundidad. Doblar la tela cierra el agujero.',
+   desc_en:'This fine black cloth unfolds into a circular sheet 6 feet in diameter. You can place it on a solid surface to create an extradimensional hole 10 feet deep. Folding the cloth closes the hole.'},
+  {dc:17,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:candle-of-invocation',
+   name_es:'Vela de Invocación',               name_en:'Candle of Invocation',
+   rarity_es:'Muy raro (sintonía)',             rarity_en:'Very Rare (attune)',
+   desc_es:'Dedicada a una deidad, cuando se enciende emite luz tenue en 9 metros. Cualquier criatura en esa luz con la alineación de la vela realiza tiradas de ataque, salvaciones y pruebas con ventaja. Arde un total de 4 horas.',
+   desc_en:'Dedicated to a deity, when lit this candle sheds dim light in a 30-foot radius. Any creature in that light whose alignment matches the candle\'s makes attack rolls, saving throws, and ability checks with advantage. Burns for 4 hours total.'},
+  {dc:17,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:helm-of-teleportation',
+   name_es:'Yelmo de Teletransportación',      name_en:'Helm of Teleportation',
+   rarity_es:'Raro (sintonía)',                rarity_en:'Rare (attune)',
+   desc_es:'Este yelmo tiene 3 cargas. Mientras lo llevas, puedes usar una acción y gastar 1 carga para lanzar el hechizo teletransportarse. Recupera 1d3 cargas cada amanecer.',
+   desc_en:'This helm has 3 charges. While wearing it, you can use an action and expend 1 charge to cast the teleport spell from it. The helm regains 1d3 expended charges daily at dawn.'},
+  {dc:17,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:scarab-of-protection',
+   name_es:'Escarabajo de Protección',         name_en:'Scarab of Protection',
+   rarity_es:'Legendario (sintonía)',           rarity_en:'Legendary (attune)',
+   desc_es:'Este medallón en forma de escarabajo otorga +1 a las tiradas de salvación. También concede ventaja en salvaciones contra hechizos y puede absorber hasta 12 niveles de efectos de hechizo antes de consumirse.',
+   desc_en:'This beetle-shaped medallion provides a +1 bonus to saving throws. It also grants advantage on saving throws against spells and can absorb up to 12 spell levels before its magic is gone, crumbling to dust at the last charge.'},
+  // DC 18
+  {dc:18,quality:'bad',    url:'https://dnd5e.wikidot.com/wondrous-items:sphere-of-annihilation',
+   name_es:'Esfera de Aniquilación',           name_en:'Sphere of Annihilation',
+   rarity_es:'Legendario',                     rarity_en:'Legendary',
+   desc_es:'Esta esfera negra de 60 cm de diámetro es un agujero en el multiverso. Todo lo que la toque es aniquilado — la materia simplemente deja de existir. Controlarla requiere una prueba de Inteligencia CD 25; fallarla hace que la esfera se mueva hacia ti.',
+   desc_en:'This 2-foot-diameter black sphere is a hole in the multiverse. Anything that touches it is annihilated, with matter simply ceasing to exist. Controlling it requires a DC 25 Intelligence check; failure means the sphere moves toward you.'},
+  {dc:18,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:talisman-of-pure-good',
+   name_es:'Talismán del Bien Puro',           name_en:'Talisman of Pure Good',
+   rarity_es:'Legendario (sintonía)',           rarity_en:'Legendary (attune)',
+   desc_es:'Solo las criaturas de alineación buena pueden sintonizarlo. Otorga +2 a las tiradas de ataque de hechizo. Tiene 7 cargas: como acción puedes gastar 1 para que un infernal cercano sea destruido y enviado a su plano.',
+   desc_en:'Only good-aligned creatures can attune to this talisman. It grants a +2 bonus to spell attack rolls. It has 7 charges: as an action, you can use 1 charge to cause a fiend near you to be destroyed and sent to its home plane.'},
+  {dc:18,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:crystal-ball',
+   name_es:'Bola de Cristal',                  name_en:'Crystal Ball',
+   rarity_es:'Muy raro (sintonía)',             rarity_en:'Very Rare (attune)',
+   desc_es:'La bola de cristal típica tiene unos 15 cm de diámetro. Mientras la tocas, puedes lanzar el hechizo escrutinio (CD 17) a través de ella. Algunas bolas de cristal tienen propiedades adicionales, como ver en el Plano Etéreo.',
+   desc_en:'The typical crystal ball is about 6 inches in diameter. While touching it, you can cast the scrying spell (save DC 17) through it. Some crystal balls have additional properties, like seeing into the Ethereal Plane.'},
+  {dc:18,quality:'neutral',url:'https://dnd5e.wikidot.com/wondrous-items:well-of-many-worlds',
+   name_es:'Pozo de Muchos Mundos',            name_en:'Well of Many Worlds',
+   rarity_es:'Legendario',                     rarity_en:'Legendary',
+   desc_es:'Esta fina tela negra se despliega en una lámina circular de 1,8 metros de diámetro. Al colocarla sobre una superficie plana crea un portal bidireccional hacia otro mundo o plano. El DM decide adónde lleva.',
+   desc_en:'This fine black cloth unfolds into a circular sheet 6 feet in diameter. When placed on a flat surface, it creates a two-way portal to another world or plane of existence. The GM decides where it leads.'},
+  // DC 19
+  {dc:19,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:tome-of-understanding',
+   name_es:'Tomo de la Comprensión',           name_en:'Tome of Understanding',
+   rarity_es:'Muy raro',                       rarity_en:'Very Rare',
+   desc_es:'Este libro contiene ejercicios de intuición e introspección. Dedicar 48 horas durante 6 días o menos a estudiarlo aumenta tu puntuación de Sabiduría y su máximo en 2 de forma permanente. Luego pierde su magia, que recupera en un siglo.',
+   desc_en:'This book contains intuition and insight exercises. Spending 48 hours over 6 days or fewer studying it permanently increases your Wisdom score and maximum by 2. The manual then loses its magic, but regains it in a century.'},
+  {dc:19,quality:'bad',    url:'https://dnd5e.wikidot.com/wondrous-items:talisman-of-ultimate-evil',
+   name_es:'Talismán del Mal Supremo',         name_en:'Talisman of Ultimate Evil',
+   rarity_es:'Legendario (sintonía)',           rarity_en:'Legendary (attune)',
+   desc_es:'Solo las criaturas malvadas pueden sintonizarlo. Otorga +2 a las tiradas de ataque de hechizo. Tiene 6 cargas: como acción puedes gastar 1 para disparar un rayo de energía oscura a una criatura no malvada cercana.',
+   desc_en:'Only evil creatures can attune to this talisman. It grants a +2 bonus to spell attack rolls. It has 6 charges: as an action, you can use 1 charge to blast a non-evil creature near you with a ray of dark energy.'},
+  // DC 20
+  {dc:20,quality:'good',   url:'https://dnd5e.wikidot.com/wondrous-items:book-of-exalted-deeds',
+   name_es:'Libro de las Obras Exaltadas',     name_en:'Book of Exalted Deeds',
+   rarity_es:'Artefacto (sintonía)',            rarity_en:'Artifact (attune)',
+   desc_es:'Solo una criatura de alineación buena puede sintonizarlo. Una vez sintonizado, tu puntuación de Sabiduría y su máximo aumentan en 2. Ganas visión en la oscuridad (18 m) y ventaja en salvaciones contra hechizos y efectos mágicos.',
+   desc_en:'Only a good-aligned creature can attune to this book. Once attuned, your Wisdom score and maximum each increase by 2. You gain darkvision (60 ft.) and advantage on saving throws against spells and magical effects.'},
+  {dc:20,quality:'neutral',url:'https://dnd5e.wikidot.com/wondrous-items:deck-of-many-things',
+   name_es:'Baraja de Muchas Cosas',           name_en:'Deck of Many Things',
+   rarity_es:'Legendario',                     rarity_en:'Legendary',
+   desc_es:'Esta baraja contiene cartas de marfil o vitela. Cada carta tiene un efecto mágico específico al ser robada. Robar cartas de esta baraja es una de las acciones más trascendentales y peligrosas que un aventurero puede realizar — desde gran fortuna hasta ruina total.',
+   desc_en:'This deck contains cards made of ivory or vellum. Each card has a specific magical effect when drawn. Drawing from this deck is one of the most consequential and dangerous actions any adventurer can take — effects range from great fortune to total ruin.'},
+];
+
+// ══════════════════════════════════════════════════════
+// 46 MALDICIONES — bilingual
+// ══════════════════════════════════════════════════════
+const CURSES = [
+  {severity:'leve',
+   curse_name_es:'Letargo del Espíritu',          curse_name_en:'Spirit Lethargy',
+   curse_desc_es:'Una niebla invisible llena tu mente. Tus sentidos se embotan durante varios minutos.',
+   curse_desc_en:'An invisible fog fills your mind. Your senses dull for several minutes.',
+   curse_effect_es:'Desventaja en las próximas 2 tiradas de Percepción.',
+   curse_effect_en:'Disadvantage on the next 2 Perception checks.'},
+  {severity:'leve',
+   curse_name_es:'Picadura de la Roca',            curse_name_en:'Rock Sting',
+   curse_desc_es:'Pequeñas esquirlas de piedra te cortan las palmas al tocar el ladrillo.',
+   curse_desc_en:'Small stone splinters cut your palms as you touch the brick.',
+   curse_effect_es:'1d4 de daño perforante. Sin efecto adicional.',
+   curse_effect_en:'1d4 piercing damage. No additional effect.'},
+  {severity:'leve',
+   curse_name_es:'Murmullo del Calabozo',          curse_name_en:'Dungeon Murmur',
+   curse_desc_es:'Voces susurrantes llenan tu cabeza durante varios minutos. La concentración se vuelve difícil.',
+   curse_desc_en:'Whispering voices fill your head for several minutes. Concentration becomes difficult.',
+   curse_effect_es:'No puedes concentrarte en hechizos durante 1 minuto.',
+   curse_effect_en:'You can\'t concentrate on spells for 1 minute.'},
+  {severity:'leve',
+   curse_name_es:'Polvo Adormecedor',              curse_name_en:'Numbing Dust',
+   curse_desc_es:'Una nube de polvo grisáceo te envuelve al tocar el ladrillo. Tus párpados pesan como losas.',
+   curse_desc_en:'A cloud of grey dust envelops you as you touch the brick. Your eyelids feel like slabs.',
+   curse_effect_es:'Desventaja en las próximas tiradas de Iniciativa.',
+   curse_effect_en:'Disadvantage on the next Initiative rolls.'},
+  {severity:'leve',
+   curse_name_es:'Náusea de la Piedra',            curse_name_en:'Stone Nausea',
+   curse_desc_es:'Una oleada de malestar te recorre desde las manos hasta el estómago. La sala parece girar.',
+   curse_desc_en:'A wave of nausea runs from your hands to your stomach. The room seems to spin.',
+   curse_effect_es:'Envenenado durante 1 ronda (sin daño adicional).',
+   curse_effect_en:'Poisoned for 1 round (no additional damage).'},
+  {severity:'leve',
+   curse_name_es:'Escalofríos Arcanos',            curse_name_en:'Arcane Chills',
+   curse_desc_es:'Un frío sobrenatural recorre tu columna. Sientes que algo invisible te examina.',
+   curse_desc_en:'A supernatural cold runs down your spine. You feel something invisible examining you.',
+   curse_effect_es:'Desventaja en la próxima tirada de salvación.',
+   curse_effect_en:'Disadvantage on the next saving throw.'},
+  {severity:'leve',
+   curse_name_es:'Olvido Fugaz',                   curse_name_en:'Fleeting Amnesia',
+   curse_desc_es:'Tu mente se vacía por completo durante un instante. Pierdes el hilo de tus pensamientos.',
+   curse_desc_en:'Your mind goes completely blank for an instant. You lose the thread of your thoughts.',
+   curse_effect_es:'Pierdes tu próxima acción bonus en combate.',
+   curse_effect_en:'You lose your next bonus action in combat.'},
+  {severity:'leve',
+   curse_name_es:'Picazón Maldita',                curse_name_en:'Cursed Itch',
+   curse_desc_es:'Una picazón insoportable te recorre las manos. Incluso con guantes, el alivio no llega.',
+   curse_desc_en:'An unbearable itch runs through your hands. Even with gloves, no relief comes.',
+   curse_effect_es:'Desventaja en tiradas de Destreza (manos) durante 10 minutos.',
+   curse_effect_en:'Disadvantage on Dexterity (hands) checks for 10 minutes.'},
+  {severity:'leve',
+   curse_name_es:'Sed del Vacío',                  curse_name_en:'Void Thirst',
+   curse_desc_es:'De pronto sientes una sed atroz como si llevaras días sin agua en un desierto.',
+   curse_desc_en:'You suddenly feel a terrible thirst as if you haven\'t had water for days in a desert.',
+   curse_effect_es:'Nivel 1 de Agotamiento si no bebes agua en los próximos 10 minutos.',
+   curse_effect_en:'1 level of Exhaustion if you don\'t drink water in the next 10 minutes.'},
+  {severity:'leve',
+   curse_name_es:'Sombra Persistente',             curse_name_en:'Persistent Shadow',
+   curse_desc_es:'Tu sombra comienza a moverse con un segundo de retraso. Los que te ven notan que algo no va bien.',
+   curse_desc_en:'Your shadow begins moving with a one-second delay. Those who see you notice something is wrong.',
+   curse_effect_es:'Desventaja en tiradas de Carisma (Persuasión) hasta descanso corto.',
+   curse_effect_en:'Disadvantage on Charisma (Persuasion) checks until short rest.'},
+  {severity:'moderado',
+   curse_name_es:'Manos de Plomo',                 curse_name_en:'Lead Hands',
+   curse_desc_es:'Tus manos se sienten increíblemente pesadas, como si llevaras guanteletes de hierro fundido.',
+   curse_desc_en:'Your hands feel incredibly heavy, as if wearing molten iron gauntlets.',
+   curse_effect_es:'−2 a las tiradas de ataque con armas a una mano durante 1 hora.',
+   curse_effect_en:'−2 to attack rolls with one-handed weapons for 1 hour.'},
+  {severity:'moderado',
+   curse_name_es:'Maldición del Tropiezo',         curse_name_en:'Stumbling Curse',
+   curse_desc_es:'La magia del ladrillo altera tu sentido del equilibrio. Cada paso parece un riesgo.',
+   curse_desc_en:'The brick\'s magic alters your sense of balance. Every step feels like a risk.',
+   curse_effect_es:'Caes prono si fallas una tirada de salvación de Destreza en los próximos 10 minutos.',
+   curse_effect_en:'You fall prone if you fail a Dexterity saving throw in the next 10 minutes.'},
+  {severity:'moderado',
+   curse_name_es:'Susurros de Paranoia',           curse_name_en:'Paranoia Whispers',
+   curse_desc_es:'Una voz que suena como la tuya propia te convence de que tus aliados tramaban algo contra ti.',
+   curse_desc_en:'A voice that sounds like your own convinces you that your allies were plotting against you.',
+   curse_effect_es:'Debes hacer una tirada de Sabiduría CD 13 para cooperar con aliados durante 1 hora.',
+   curse_effect_en:'You must make a DC 13 Wisdom check to cooperate with allies for 1 hour.'},
+  {severity:'moderado',
+   curse_name_es:'Marca del Paria',                curse_name_en:'Outcast Mark',
+   curse_desc_es:'Una marca oscura e invisible, que solo perciben los animales y las bestias, aparece en tu frente.',
+   curse_desc_en:'A dark, invisible mark that only animals and beasts can sense appears on your forehead.',
+   curse_effect_es:'Las bestias y animales te huyen o atacan (a discreción del DM) durante 24 horas.',
+   curse_effect_en:'Beasts and animals flee or attack you (DM\'s discretion) for 24 hours.'},
+  {severity:'moderado',
+   curse_name_es:'Voz Robada',                     curse_name_en:'Stolen Voice',
+   curse_desc_es:'Al retirar la mano del ladrillo, compruebas horrorizado que no puedes emitir ningún sonido.',
+   curse_desc_en:'As you pull your hand from the brick, you discover in horror that you can\'t make any sound.',
+   curse_effect_es:'Incapaz de hablar ni lanzar hechizos con componentes verbales durante 10 minutos.',
+   curse_effect_en:'Unable to speak or cast spells with verbal components for 10 minutes.'},
+  {severity:'moderado',
+   curse_name_es:'Frío del Muerto',                curse_name_en:'Death\'s Cold',
+   curse_desc_es:'Un frío de tumba penetra en tus huesos. Tu piel adquiere un tono azulado inquietante.',
+   curse_desc_en:'A tomb-cold penetrates your bones. Your skin takes on an unsettling bluish hue.',
+   curse_effect_es:'2d6 de daño por frío y sin resistencia al fuego durante 1 hora.',
+   curse_effect_en:'2d6 cold damage and no resistance to fire for 1 hour.'},
+  {severity:'moderado',
+   curse_name_es:'Golpe del Ladrillo',             curse_name_en:'Brick Blow',
+   curse_desc_es:'La energía negativa del ladrillo explota hacia fuera en una onda visible de luz roja.',
+   curse_desc_en:'The brick\'s negative energy explodes outward in a visible wave of red light.',
+   curse_effect_es:'2d8 de daño necrótico. Tira CD 13 CON o queda aturdido 1 ronda.',
+   curse_effect_en:'2d8 necrotic damage. Roll DC 13 CON or be stunned for 1 round.'},
+  {severity:'moderado',
+   curse_name_es:'Ilusión del Miedo',              curse_name_en:'Fear Illusion',
+   curse_desc_es:'Durante un instante aterrador ves tu peor temor reflejado en la superficie del ladrillo.',
+   curse_desc_en:'For a terrifying instant you see your worst fear reflected in the brick\'s surface.',
+   curse_effect_es:'Asustado durante 1 minuto (CD 13 SAB. para repetir al final de tu turno).',
+   curse_effect_en:'Frightened for 1 minute (DC 13 WIS to repeat at the end of your turn).'},
+  {severity:'moderado',
+   curse_name_es:'Roba-Suerte',                    curse_name_en:'Luck Thief',
+   curse_desc_es:'Sientes que algo invisible te arranca la fortuna de las manos como se arranca una moneda de la palma.',
+   curse_desc_en:'You feel something invisible tear fortune from your hands like a coin snatched from your palm.',
+   curse_effect_es:'Pierdes todos los puntos de Inspiración. Desventaja en la próxima tirada de d20.',
+   curse_effect_en:'You lose all Inspiration points. Disadvantage on the next d20 roll.'},
+  {severity:'moderado',
+   curse_name_es:'Peso del Tiempo',                curse_name_en:'Weight of Time',
+   curse_desc_es:'Por un breve momento pareces envejecer ante los ojos de tus compañeros. Arrugas, canas, torpeza.',
+   curse_desc_en:'For a brief moment you appear to age before your companions\' eyes. Wrinkles, grey hair, clumsiness.',
+   curse_effect_es:'Tu velocidad se reduce en 3 metros durante 1 hora.',
+   curse_effect_en:'Your speed is reduced by 10 feet for 1 hour.'},
+  {severity:'severo',
+   curse_name_es:'Cadenas Espectrales',            curse_name_en:'Spectral Chains',
+   curse_desc_es:'Cadenas de energía oscura emergen del ladrillo y te envuelven brevemente los brazos antes de desvanecerse.',
+   curse_desc_en:'Chains of dark energy emerge from the brick and briefly wrap around your arms before fading.',
+   curse_effect_es:'3d8 de daño necrótico y reducción de velocidad a 0 durante 1 ronda.',
+   curse_effect_en:'3d8 necrotic damage and speed reduced to 0 for 1 round.'},
+  {severity:'severo',
+   curse_name_es:'Maldición del Doppelgänger',     curse_name_en:'Doppelgänger Curse',
+   curse_desc_es:'Tu reflejo en cualquier superficie muestra a otra persona durante el resto del día.',
+   curse_desc_en:'Your reflection in any surface shows a different person for the rest of the day.',
+   curse_effect_es:'Desventaja en todas las tiradas de Carisma durante 8 horas.',
+   curse_effect_en:'Disadvantage on all Charisma rolls for 8 hours.'},
+  {severity:'severo',
+   curse_name_es:'Ira de la Piedra Antigua',       curse_name_en:'Ancient Stone\'s Wrath',
+   curse_desc_es:'Una fuerza invisible te golpea el pecho como un ariete, lanzándote hacia atrás.',
+   curse_desc_en:'An invisible force strikes your chest like a battering ram, throwing you backward.',
+   curse_effect_es:'3d10 de daño de fuerza y empujado 4,5 metros. Si impactas en una pared, 1d6 adicional.',
+   curse_effect_en:'3d10 force damage and pushed 15 feet. If you hit a wall, 1d6 additional.'},
+  {severity:'severo',
+   curse_name_es:'Necrosis Temporal',              curse_name_en:'Temporal Necrosis',
+   curse_desc_es:'El tejido de tu mano que tocó el ladrillo se oscurece brevemente, enviando un dolor agudo hasta el hombro.',
+   curse_desc_en:'The tissue of your hand that touched the brick briefly darkens, sending sharp pain to your shoulder.',
+   curse_effect_es:'3d6 de daño necrótico. Tu máximo de PV se reduce en esa cantidad hasta descanso largo.',
+   curse_effect_en:'3d6 necrotic damage. Your max HP is reduced by that amount until long rest.'},
+  {severity:'severo',
+   curse_name_es:'Geas de la Mazmorra',            curse_name_en:'Dungeon Geas',
+   curse_desc_es:'Sientes que una voluntad antigua se graba en tu mente: debes dejar un objeto valioso antes de salir.',
+   curse_desc_en:'You feel an ancient will etched into your mind: you must leave a valuable item behind before leaving.',
+   curse_effect_es:'Maldición de geas menor. Ignorarla causa 2d6 de daño psíquico por hora.',
+   curse_effect_en:'Minor geas curse. Ignoring it causes 2d6 psychic damage per hour.'},
+  {severity:'severo',
+   curse_name_es:'Ojo del Abismo',                 curse_name_en:'Eye of the Abyss',
+   curse_desc_es:'Por un instante aterrador ves a través del ojo de una entidad del Vacío que te observa.',
+   curse_desc_en:'For a terrifying instant you see through the eye of a Void entity that is watching you.',
+   curse_effect_es:'3d6 de daño psíquico. Asustado de la oscuridad durante 1 hora.',
+   curse_effect_en:'3d6 psychic damage. Frightened of darkness for 1 hour.'},
+  {severity:'severo',
+   curse_name_es:'Inversión Mágica',               curse_name_en:'Magic Inversion',
+   curse_desc_es:'La polaridad de tu magia se invierte brevemente. Los curativos dañan y los dañinos curan.',
+   curse_desc_en:'The polarity of your magic briefly inverts. Healing spells deal damage and vice versa.',
+   curse_effect_es:'El próximo hechizo que lances tiene efecto opuesto al deseado.',
+   curse_effect_en:'The next spell you cast has the opposite effect of what was intended.'},
+  {severity:'severo',
+   curse_name_es:'Sangrado Arcano',                curse_name_en:'Arcane Bleed',
+   curse_desc_es:'Pequeñas heridas aparecen en tu piel y sangran tinta negra y luminosa. No cierran solas.',
+   curse_desc_en:'Small wounds appear on your skin and bleed bright black ink. They don\'t close on their own.',
+   curse_effect_es:'Pierdes 1d6 PV al inicio de cada turno durante 3 rondas (curación mágica lo detiene).',
+   curse_effect_en:'Lose 1d6 HP at the start of each turn for 3 rounds (magical healing stops this).'},
+  {severity:'severo',
+   curse_name_es:'Toque del Lich',                 curse_name_en:'Lich\'s Touch',
+   curse_desc_es:'La esencia de un no-muerto poderoso atraviesa tu cuerpo como una corriente helada.',
+   curse_desc_en:'The essence of a powerful undead passes through your body like an icy current.',
+   curse_effect_es:'4d8 de daño necrótico. Si te reduce a 0 PV, quedas paralizado en lugar de inconsciente.',
+   curse_effect_en:'4d8 necrotic damage. If this reduces you to 0 HP, you are paralyzed instead of unconscious.'},
+  {severity:'severo',
+   curse_name_es:'Pesadilla Vigil',                curse_name_en:'Waking Nightmare',
+   curse_desc_es:'Visiones de muerte y ruina llenan tu mente. Aunque estés despierto, no puedes distinguir lo real.',
+   curse_desc_en:'Visions of death and ruin fill your mind. Even while awake, you can\'t tell what is real.',
+   curse_effect_es:'Caes bajo el efecto de confusión durante 2 rondas (sin tirada de salvación).',
+   curse_effect_en:'You fall under the confusion effect for 2 rounds (no saving throw).'},
+  {severity:'letal',
+   curse_name_es:'Condena del Alabastro',          curse_name_en:'Alabaster Condemnation',
+   curse_desc_es:'El ladrillo emite un flash cegador y una voz cavernosa proclama tu condena en una lengua olvidada.',
+   curse_desc_en:'The brick emits a blinding flash and a cavernous voice proclaims your condemnation in a forgotten tongue.',
+   curse_effect_es:'4d10 de daño necrótico. Si fallas CD 15 CON, tu máximo de PV se reduce a la mitad hasta descanso largo.',
+   curse_effect_en:'4d10 necrotic damage. If you fail DC 15 CON, your max HP is halved until long rest.'},
+  {severity:'letal',
+   curse_name_es:'Llama del Juicio',               curse_name_en:'Judgment Flame',
+   curse_desc_es:'Una llama invisible de color negro te abrasa desde dentro. No arde la ropa, pero el dolor es real.',
+   curse_desc_en:'An invisible black-colored flame burns you from within. Clothes don\'t burn, but the pain is real.',
+   curse_effect_es:'5d8 de daño de fuego. Sin resistencias al fuego durante 8 horas.',
+   curse_effect_en:'5d8 fire damage. No resistance to fire for 8 hours.'},
+  {severity:'letal',
+   curse_name_es:'Fragmento de Alma',              curse_name_en:'Soul Fragment',
+   curse_desc_es:'Algo es arrancado de tu interior. No es dolor físico — es algo mucho peor.',
+   curse_desc_en:'Something is torn from within you. It\'s not physical pain — it\'s something far worse.',
+   curse_effect_es:'Carisma reducido en 4 hasta que se lance remover maldición sobre ti.',
+   curse_effect_en:'Charisma reduced by 4 until remove curse is cast on you.'},
+  {severity:'letal',
+   curse_name_es:'Tormenta de Huesos',             curse_name_en:'Bone Storm',
+   curse_desc_es:'Esquirlas de piedra invocan huesos espectrales que te atraviesan en una explosión devastadora.',
+   curse_desc_en:'Stone splinters invoke spectral bones that pierce through you in a devastating explosion.',
+   curse_effect_es:'5d10 de daño perforante. Tira CD 15 FUE o cae prono e inmovilizado 1 ronda.',
+   curse_effect_en:'5d10 piercing damage. Roll DC 15 STR or fall prone and be restrained for 1 round.'},
+  {severity:'letal',
+   curse_name_es:'El Ladrillo que Devora',         curse_name_en:'The Devouring Brick',
+   curse_desc_es:'Por un instante tu mano entera es succionada hacia el interior de la piedra. La sientes aplastarse antes de ser expulsado.',
+   curse_desc_en:'For an instant your entire hand is sucked into the stone. You feel it being crushed before being expelled.',
+   curse_effect_es:'5d12 de daño de aplastamiento. Si cae a 0 PV, lanza fallos de muerte con desventaja.',
+   curse_effect_en:'5d12 bludgeoning damage. If reduced to 0 HP, make death saves with disadvantage.'},
+  {severity:'letal',
+   curse_name_es:'Sello de Destierro',             curse_name_en:'Banishment Seal',
+   curse_desc_es:'Una runa brillante aparece en tu frente. Eres marcado como enemigo de los señores del calabozo.',
+   curse_desc_en:'A glowing rune appears on your forehead. You are marked as an enemy of the dungeon lords.',
+   curse_effect_es:'Todos los no-muertos y demonios en la mazmorra te detectan durante 24 horas.',
+   curse_effect_en:'All undead and demons in the dungeon become aware of your presence for 24 hours.'},
+  {severity:'letal',
+   curse_name_es:'Corrupción Profunda',            curse_name_en:'Deep Corruption',
+   curse_desc_es:'Una oscuridad física y visible emana de la pared y te rodea. Cuando se disipa, algo ha cambiado.',
+   curse_desc_en:'A physical, visible darkness emanates from the wall and surrounds you. When it fades, something has changed.',
+   curse_effect_es:'Lanza un dado de cualquier tipo. Ese valor se aplica como penalización a todas tus tiradas durante 1 hora.',
+   curse_effect_en:'Roll any die. That value applies as a penalty to all your rolls for 1 hour.'},
+  {severity:'letal',
+   curse_name_es:'La Última Advertencia',          curse_name_en:'The Last Warning',
+   curse_desc_es:'La pared sangra brevemente. Tu nombre aparece grabado en el ladrillo. Solo tú puedes verlo.',
+   curse_desc_en:'The wall briefly bleeds. Your name appears engraved in the brick. Only you can see it.',
+   curse_effect_es:'6d6 de daño psíquico. Si esto te mata, no puedes ser resucitado salvo con deseo o resurrección verdadera.',
+   curse_effect_en:'6d6 psychic damage. If this kills you, you cannot be resurrected except by wish or true resurrection.'},
+  {severity:'letal',
+   curse_name_es:'Condena del Señor Oscuro',       curse_name_en:'Dark Lord\'s Condemnation',
+   curse_desc_es:'Una sombra gigantesca toma forma en la pared y te señala con un dedo espectral ante todos.',
+   curse_desc_en:'A giant shadow takes form in the wall and points a spectral finger at you before all.',
+   curse_effect_es:'Caes a 0 PV (sin tirada). Estabilizado automáticamente pero con 3 fallos de muerte ya marcados.',
+   curse_effect_en:'You fall to 0 HP (no roll). Auto-stabilized but with 3 death saves already marked.'},
+  {severity:'letal',
+   curse_name_es:'Vórtice Demoníaco',              curse_name_en:'Demonic Vortex',
+   curse_desc_es:'El ladrillo se abre brevemente revelando un destello del Abismo. Lo que ves te marcará para siempre.',
+   curse_desc_en:'The brick briefly opens revealing a flash of the Abyss. What you see will mark you forever.',
+   curse_effect_es:'6d8 de daño psíquico. Locura menor permanente a discreción del DM.',
+   curse_effect_en:'6d8 psychic damage. Permanent minor madness at DM\'s discretion.'},
+  {severity:'letal',
+   curse_name_es:'Ejecutor de Piedra',             curse_name_en:'Stone Executioner',
+   curse_desc_es:'Un puño de roca emerge del muro y te golpea con una fuerza sobrenatural antes de retraerse.',
+   curse_desc_en:'A fist of rock emerges from the wall and strikes you with supernatural force before retracting.',
+   curse_effect_es:'6d10 de daño de aplastamiento. Tira CD 17 CON o fractura (velocidad 0 hasta curación mágica).',
+   curse_effect_en:'6d10 bludgeoning damage. Roll DC 17 CON or fracture (speed 0 until magical healing).'},
+  {severity:'letal',
+   curse_name_es:'Maldición del Ciclo Eterno',     curse_name_en:'Eternal Cycle Curse',
+   curse_desc_es:'Sientes que has vivido este momento exacto cien veces antes, y que lo vivirás cien veces más.',
+   curse_desc_en:'You feel you have lived this exact moment a hundred times before, and will live it a hundred more.',
+   curse_effect_es:'Aturdido durante 1 minuto completo. Sin tirada de salvación para reducir la duración.',
+   curse_effect_en:'Stunned for 1 full minute. No saving throw to reduce duration.'},
+  {severity:'letal',
+   curse_name_es:'El Don de las Sombras',          curse_name_en:'Gift of Shadows',
+   curse_desc_es:'Las sombras de la sala te abrazan. Te vuelves umbra durante 1 minuto — invisible pero incapaz de interactuar con el mundo físico.',
+   curse_desc_en:'The room\'s shadows embrace you. You become an umbra for 1 minute — invisible but unable to interact with the physical world.',
+   curse_effect_es:'Incapacitado e invisible durante 1 minuto. No puedes atacar, lanzar hechizos ni coger objetos.',
+   curse_effect_en:'Incapacitated and invisible for 1 minute. Can\'t attack, cast spells, or pick up objects.'},
+  {severity:'letal',
+   curse_name_es:'Ira del Constructor',            curse_name_en:'Builder\'s Wrath',
+   curse_desc_es:'El espíritu de quien construyó esta mazmorra despierta brevemente, furioso por la intromisión.',
+   curse_desc_en:'The spirit of whoever built this dungeon briefly awakens, furious at the intrusion.',
+   curse_effect_es:'Invocación inmediata de 1d4 esqueletos hostiles que solo atacan a quien tocó el ladrillo.',
+   curse_effect_en:'Immediate summoning of 1d4 hostile skeletons that only attack whoever touched the brick.'},
+  {severity:'letal',
+   curse_name_es:'La Mazmorra Te Reclama',         curse_name_en:'The Dungeon Claims You',
+   curse_desc_es:'Por un instante el suelo bajo tus pies se vuelve barro y sientes que serías engullido si la magia no te soltara.',
+   curse_desc_en:'For an instant the floor beneath your feet turns to mud and you feel you would be swallowed if the magic didn\'t release you.',
+   curse_effect_es:'7d6 de daño de aplastamiento. Enterrado hasta las rodillas: CD 18 FUE para liberarte.',
+   curse_effect_en:'7d6 bludgeoning damage. Buried to the knees: DC 18 STR to free yourself.'},
+  {severity:'letal',
+   curse_name_es:'Destello del Fin',               curse_name_en:'Flash of the End',
+   curse_desc_es:'Ves tu propia muerte. No una posibilidad — tu muerte. Con fecha, lugar y quién estará presente.',
+   curse_desc_en:'You see your own death. Not a possibility — your death. With date, place, and who will be present.',
+   curse_effect_es:'Choque existencial: Sabiduría reducida en 6 hasta descanso largo. Desventaja en todas las tiradas.',
+   curse_effect_en:'Existential shock: Wisdom reduced by 6 until long rest. Disadvantage on all rolls.'},
+];
+
+// ══════════════════════════════════════════════════════
+// STORAGE KEY
+const LS_KEY = 'dungeon_wall_state_v4';
+
+let success=0, curses=0, revealed=0;
+let activeBrick=null, activeItem=null, activeCurse=null;
+
+// Deterministic curse assignment (seeded by index)
+const CURSE_ORDER = [...Array(56).keys()].map(i=>i%CURSES.length);
+
+function t(){ return UI[LANG]; }
+
+function setLang(l){
+  LANG = l;
+  localStorage.setItem('dungeon_lang', l);
+  document.getElementById('btnES').classList.toggle('active', l==='es');
+  document.getElementById('btnEN').classList.toggle('active', l==='en');
+  refreshUIText();
+}
+
+function refreshUIText(){
+  const u = t();
+  document.getElementById('mainTitle').textContent    = u.title;
+  document.getElementById('mainSubtitle').textContent = u.subtitle;
+  document.getElementById('wisLabel').childNodes[0].textContent = u.wisLabel+' ';
+  document.getElementById('resetLabel').textContent   = u.resetLabel;
+  // legend
+  const lg = document.getElementById('legend');
+  const spans = lg.querySelectorAll('span');
+  u.legend.forEach((txt,i)=>{ if(spans[i]) spans[i].lastChild.textContent = ' '+txt.slice(2); });
+  // stats
+  updateStats();
+  // reset confirm
+  document.getElementById('resetTitle').textContent = u.resetTitle;
+  document.getElementById('resetBody').textContent  = u.resetBody;
+  document.getElementById('resetYes').textContent   = u.resetYes;
+  document.getElementById('resetNo').textContent    = u.resetNo;
+  // update all rev-badges text
+  document.querySelectorAll('.rev-badge').forEach(b=>{
+    const brick = b.closest('.brick');
+    if(!brick) return;
+    const idx = parseInt(brick.dataset.idx);
+    const item = ITEMS[idx];
+    const ok = !brick.classList.contains('rev-fail');
+    b.textContent = u.badge(item.dc, ok);
+  });
+}
+
+function updateStats(){
+  document.getElementById('statsBar').textContent = t().stats(revealed,success,curses);
+}
+
+// ── STORAGE ──────────────────────────────────────────
+function saveState(){
+  const bricks = [];
+  document.querySelectorAll('.brick[data-revealed]').forEach(brick=>{
+    bricks.push({
+      idx:    parseInt(brick.dataset.idx),
+      passed: brick._lastResult ? brick._lastResult.passed : !brick.classList.contains('rev-fail'),
+      result: brick._lastResult || null,
+    });
+  });
+  localStorage.setItem(LS_KEY, JSON.stringify({bricks, success, curses, revealed}));
+}
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw) return;
+    const state = JSON.parse(raw);
+    success = state.success||0;
+    curses  = state.curses||0;
+    revealed= state.revealed||0;
+    return state.bricks||[];
+  }catch(e){ return []; }
+}
+
+function applyState(brickEls, savedBricks){
+  if(!savedBricks||!savedBricks.length) return;
+  savedBricks.forEach(({idx,passed,result})=>{
+    const brick = brickEls[idx];
+    if(!brick) return;
+    const item = ITEMS[idx];
+    brick.dataset.revealed = '1';
+    brick._lastResult = result;
+    if(passed){
+      brick.classList.add('revealed','rev-'+item.quality);
+    } else {
+      brick.classList.add('revealed','rev-fail');
+      const fi = document.createElement('span');
+      fi.className='fail-icon'; fi.textContent='✕';
+      brick.appendChild(fi);
+    }
+    const badge = document.createElement('span');
+    badge.className='rev-badge';
+    badge.textContent = t().badge(item.dc, passed);
+    brick.appendChild(badge);
+  });
+}
+
+// ── WALL ─────────────────────────────────────────────
+let brickEls = [];
+
+function buildWall(){
+  const wall = document.getElementById('wall');
+  wall.innerHTML = '';
+  brickEls = [];
+  const rowCounts = [7,6,7,6,7,6,7,6];
+  let idx=0;
+  rowCounts.forEach((count,ri)=>{
+    const row = document.createElement('div');
+    row.className='brick-row'+(ri%2===1?' offset':'');
+    for(let i=0;i<count;i++){
+      const item  = ITEMS[idx];
+      const curse = CURSES[CURSE_ORDER[idx]];
+      const brick = document.createElement('div');
+      brick.className='brick';
+      brick.dataset.idx=idx;
+      brick._item  = item;
+      brick._curse = curse;
+
+      const dcCol = item.dc<=10?'#6aaa40':item.dc<=14?'#c09030':item.dc<=17?'#c05030':'#b020c0';
+      brick.innerHTML=`<div class="face"></div><div class="edge-t"></div><div class="edge-l"></div><div class="shad"></div>
+        <div class="tip"><span class="dc-lbl" style="color:${dcCol}">CD ${item.dc}</span><span class="eye">👁</span></div>`;
+      brick.addEventListener('click',()=>handleBrickClick(brick));
+      row.appendChild(brick);
+      brickEls[idx]=brick;
+      idx++;
+    }
+    wall.appendChild(row);
+  });
+}
+
+// ── MODAL LOGIC ───────────────────────────────────────
+function handleBrickClick(brick){
+  if(brick.dataset.revealed){ showCachedResult(brick); return; }
+  activeBrick=brick; activeItem=brick._item; activeCurse=brick._curse;
+  const u=t();
+  const bonus=getBonus();
+  document.getElementById('modal').className='modal s-ask';
+  document.getElementById('mTitle').textContent=u.modalTitle;
+  document.getElementById('askInfo').innerHTML=u.askIntro(activeItem.dc, activeItem[u.nameKey], u.bonusStr(bonus));
+  document.getElementById('rollLabel').textContent=u.rollLabel;
+  document.getElementById('btnConfirm').textContent=u.confirmBtn;
+  document.getElementById('rollInput').value='';
+  document.getElementById('phase-ask').classList.add('active');
+  document.getElementById('phase-result').classList.remove('active');
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('rollInput').focus(),200);
+}
+
+function getBonus(){ return parseInt(document.getElementById('wisBonus').value)||0; }
+
+function confirmRoll(){
+  const raw=parseInt(document.getElementById('rollInput').value);
+  if(isNaN(raw)||raw<1||raw>20){
+    const inp=document.getElementById('rollInput');
+    inp.style.borderColor='#c04040';
+    setTimeout(()=>inp.style.borderColor='',1200);
+    return;
+  }
+  const bonus=getBonus(), total=raw+bonus;
+  const nat20=raw===20, nat1=raw===1;
+  const passed=nat20?true:nat1?false:total>=activeItem.dc;
+
+  if(!activeBrick.dataset.revealed){
+    activeBrick.dataset.revealed='1';
+    revealed++;
+    activeBrick._lastResult={raw,bonus,total,passed,nat20,nat1};
+    if(passed){
+      success++;
+      activeBrick.classList.add('revealed','rev-'+activeItem.quality);
+    } else {
+      curses++;
+      activeBrick.classList.add('revealed','rev-fail');
+      const fi=document.createElement('span'); fi.className='fail-icon'; fi.textContent='✕';
+      activeBrick.appendChild(fi);
+    }
+    const badge=document.createElement('span'); badge.className='rev-badge';
+    badge.textContent=t().badge(activeItem.dc,passed);
+    activeBrick.appendChild(badge);
+    updateStats();
+    saveState();
+  }
+  showResult(raw,bonus,total,passed,nat20,nat1,activeItem,activeCurse);
+}
+
+function showCachedResult(brick){
+  activeBrick=brick; activeItem=brick._item; activeCurse=brick._curse;
+  const r=brick._lastResult||{raw:0,bonus:0,total:0,passed:false,nat20:false,nat1:false};
+  showResult(r.raw,r.bonus,r.total,r.passed,r.nat20,r.nat1,activeItem,activeCurse);
+}
+
+function showResult(raw,bonus,total,passed,nat20,nat1,item,curse){
+  const u=t();
+  document.getElementById('phase-ask').classList.remove('active');
+  document.getElementById('phase-result').classList.add('active');
+  document.getElementById('modal').className='modal '+(passed?'s-'+item.quality:'s-curse');
+
+  const col=nat20?'#f0c94a':nat1?'#c04040':'#c9a84c';
+  const tag=nat20?u.nat20:nat1?u.nat1:'';
+  const bonStr=bonus===0?'':(bonus>0?` + ${bonus}`:` ${bonus}`);
+  document.getElementById('rollBig').innerHTML=`<span style="color:${col}">${raw}</span>${bonStr} <span style="font-size:1.4rem;color:#a08060">= ${total}</span>`;
+  document.getElementById('rollDetail').innerHTML=(tag?`<span style="color:${col};letter-spacing:3px">${tag}</span><br>`:'')+u.result(total,item.dc);
+  document.getElementById('resBanner').innerHTML=`<div class="result-banner ${passed?'pass':'fail'}">${passed?u.pass:u.fail}</div>`;
+
+  const ia=document.getElementById('itemArea');
+  const btn=document.getElementById('btnClose');
+  if(passed){
+    const headers={good:u.itemHeader,bad:u.itemHeaderBad,neutral:u.itemHeaderNeutral};
+    const icons={good:'✦',bad:'☠',neutral:'◈'};
+    const rarity = LANG==='es' ? item.rarity_es : item.rarity_en;
+    const nameEs = item.name_es, nameEn = item.name_en;
+    const displayName = LANG==='es' ? nameEs : nameEn;
+    const altName     = LANG==='es' ? nameEn : nameEs;
+    const desc = LANG==='es' ? item.desc_es : item.desc_en;
+    ia.innerHTML=`<div class="item-card ${item.quality}">
+      <div class="item-rarity">${icons[item.quality]} ${headers[item.quality]} &nbsp;·&nbsp; ${rarity}</div>
+      <div class="item-name">${displayName}</div>
+      <span class="item-name-en">${altName}</span>
+      <p class="item-desc">${desc}</p>
+      <a class="item-link" href="${item.url}" target="_blank" rel="noopener">${u.wikiLink}</a>
+    </div>`;
+    btn.className='btn-close'; btn.textContent=u.closeBtn;
+  } else {
+    const sevLabel=u.sevLabel;
+    const cname   = curse[u.curseName];
+    const cdesc   = curse[u.curseDesc];
+    const ceffect = curse[u.curseEffect];
+    ia.innerHTML=`<div class="curse-card">
+      <div class="curse-header">${u.curseHeader}</div>
+      <div class="curse-name">${cname}</div>
+      <span class="curse-impact ${curse.severity}">${sevLabel[curse.severity]}</span>
+      <p class="curse-desc">${cdesc}</p>
+      <div class="curse-effect">⚙ ${ceffect}</div>
+    </div>`;
+    btn.className='btn-close red-btn'; btn.textContent=u.curseBtn;
+  }
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeModal(){
+  document.getElementById('overlay').classList.remove('open');
+  activeBrick=null; activeItem=null; activeCurse=null;
+}
+
+// ── RESET ─────────────────────────────────────────────
+function openReset(){ document.getElementById('resetOverlay').classList.add('open'); }
+function closeReset(){ document.getElementById('resetOverlay').classList.remove('open'); }
+function doReset(){
+  localStorage.removeItem(LS_KEY);
+  success=0; curses=0; revealed=0;
+  closeReset();
+  buildWall();
+  updateStats();
+}
+
+// ── KEYBOARD ──────────────────────────────────────────
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){ closeModal(); closeReset(); }
+  if(e.key==='Enter'&&document.getElementById('phase-ask').classList.contains('active')) confirmRoll();
+});
+document.getElementById('overlay').addEventListener('click',function(e){ if(e.target===this) closeModal(); });
+document.getElementById('resetOverlay').addEventListener('click',function(e){ if(e.target===this) closeReset(); });
+
+// ── INIT ──────────────────────────────────────────────
+buildWall();
+const savedBricks = loadState();
+applyState(brickEls, savedBricks);
+updateStats();
+setLang(LANG);
+</script>
+
+</body>
+</html>
